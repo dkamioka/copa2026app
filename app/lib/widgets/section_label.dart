@@ -1,0 +1,21 @@
+import 'package:flutter/cupertino.dart';
+
+import '../theme/app_theme.dart';
+
+class SectionLabel extends StatelessWidget {
+  const SectionLabel(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.9,
+        color: AppColors.inkFainter,
+      ),
+    );
+  }
+}

@@ -1,0 +1,16 @@
+# Build/tooling artifacts (Flutter app has its own app/.gitignore too)
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+**/.dart_tool/
+**/build/
+
+# Packaging
+*.zip
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+.vscode/

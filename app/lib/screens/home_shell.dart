@@ -1,0 +1,186 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+
+import '../data/tournament_repository.dart';
+import '../theme/app_theme.dart';
+import '../widget_bridge/home_widget_bridge.dart';
+import '../widgets/aurora_background.dart';
+import '../widgets/segmented_tabs.dart';
+import 'bracket/bracket_view.dart';
+import 'groups/groups_view.dart';
+import 'scorers/scorers_view.dart';
+
+class HomeShell extends StatefulWidget {
+  const HomeShell({super.key, required this.repository, this.notice});
+
+  final TournamentRepository repository;
+
+  /// Optional slim banner shown under the tabs — e.g. when the live feed
+  /// failed and the app fell back to illustrative data.
+  final String? notice;
+
+  @override
+  State<HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
+  int _tab = 0;
+
+  static const _labels = ['Eliminatórias', 'Classificação', 'Artilheiros'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Keep the Home Screen widget close to current whenever the user
+    // comes back to the app — WidgetKit's own refresh budget is scarce,
+    // so a foreground push is the most reliable way to keep it fresh.
+    if (state == AppLifecycleState.resumed) {
+      HomeWidgetBridge.pushSnapshot(widget.repository);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      backgroundColor: const Color(0x00000000),
+      child: AuroraBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Header(),
+                    const SizedBox(height: 13),
+                    SegmentedTabs(
+                      labels: _labels,
+                      selectedIndex: _tab,
+                      onChanged: (i) {
+                        if (i == _tab) return;
+                        HapticFeedback.selectionClick();
+                        setState(() => _tab = i);
+                      },
+                    ),
+                    if (widget.notice != null) ...[
+                      const SizedBox(height: 10),
+                      _NoticeBanner(text: widget.notice!),
+                    ],
+                  ],
+                ),
+              ),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 260),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.02),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
+                  child: switch (_tab) {
+                    0 => BracketView(
+                        key: const ValueKey('elim'),
+                        repository: widget.repository,
+                      ),
+                    1 => GroupsView(
+                        key: const ValueKey('grupos'),
+                        repository: widget.repository,
+                      ),
+                    _ => ScorersView(
+                        key: const ValueKey('artilheiros'),
+                        repository: widget.repository,
+                      ),
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NoticeBanner extends StatelessWidget {
+  const _NoticeBanner({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.draw.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.draw.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          const Text('⚠️', style: TextStyle(fontSize: 12)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 11, color: AppColors.ink, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text('🏆', style: TextStyle(fontSize: 11)),
+            const SizedBox(width: 7),
+            const Text('COPA DO MUNDO FIFA', style: AppTextStyles.eyebrow),
+            const SizedBox(width: 7),
+            Text('·', style: TextStyle(color: AppColors.ink.withValues(alpha: 0.32), fontSize: 11)),
+            const SizedBox(width: 7),
+            const Text('🇺🇸 🇨🇦 🇲🇽', style: TextStyle(fontSize: 11, letterSpacing: 0.6)),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text.rich(
+          const TextSpan(
+            style: AppTextStyles.title,
+            children: [
+              TextSpan(text: 'Copa do Mundo 2026'),
+              TextSpan(
+                text: '™',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.inkFainter),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
