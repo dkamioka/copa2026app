@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -18,12 +19,23 @@ class ApiFootballException implements Exception {
 /// so repeated reads (e.g. reopening the same match sheet) don't burn
 /// the request quota.
 class ApiFootballClient {
-  ApiFootballClient({http.Client? httpClient, this.cacheTtl = const Duration(minutes: 2)})
-      : _http = httpClient ?? http.Client();
+  ApiFootballClient({
+    http.Client? httpClient,
+    this.cacheTtl = const Duration(minutes: 2),
+    this.requestTimeout = const Duration(seconds: 12),
+  }) : _http = httpClient ?? http.Client();
 
   final http.Client _http;
   final Duration cacheTtl;
+
+  /// Per-request deadline. Without one, a hung connection would leave
+  /// callers (and the startup screen) waiting forever.
+  final Duration requestTimeout;
+
   final Map<String, _CacheEntry> _cache = {};
+
+  /// Pages fetched concurrently after page 1 reveals the total.
+  static const int _maxPages = 50;
 
   /// Fetches every page of an endpoint, concatenating the `response`
   /// arrays. API-Football paginates at 20 items/page for large result
@@ -41,28 +53,43 @@ class ApiFootballClient {
     }
 
     final all = <dynamic>[];
-    var page = 1;
-    while (true) {
-      final json = await _getRaw(path, {...query, 'page': '$page'});
-      final response = json['response'];
-      if (response is List) all.addAll(response);
+    final first = await _getRaw(path, {...query, 'page': '1'});
+    final firstResponse = first['response'];
+    if (firstResponse is List) all.addAll(firstResponse);
 
-      final paging = json['paging'];
-      final total = (paging is Map && paging['total'] is int) ? paging['total'] as int : 1;
-      if (page >= total) break;
-      page++;
-      if (page > 50) break; // hard safety cap against a runaway paging loop
+    final paging = first['paging'];
+    final total = (paging is Map && paging['total'] is int) ? paging['total'] as int : 1;
+    if (total > 1) {
+      // Page 1 told us the total — fetch the rest concurrently instead
+      // of one round-trip at a time (a full World Cup fixture list is
+      // ~6 pages; sequential paging multiplies startup latency).
+      final lastPage = total.clamp(1, _maxPages);
+      final rest = await Future.wait([
+        for (var page = 2; page <= lastPage; page++)
+          _getRaw(path, {...query, 'page': '$page'}),
+      ]);
+      for (final json in rest) {
+        final response = json['response'];
+        if (response is List) all.addAll(response);
+      }
     }
 
-    _cache[cacheKey] = _CacheEntry(all, clock().add(cacheTtl));
-    return all;
+    // Stored (and returned) as unmodifiable so one caller can't mutate
+    // what a later cache hit sees.
+    final value = List<dynamic>.unmodifiable(all);
+    _cache[cacheKey] = _CacheEntry(value, clock().add(cacheTtl));
+    return value;
   }
 
   Future<Map<String, dynamic>> _getRaw(String path, Map<String, String> query) async {
     final uri = Uri.https(ApiConfig.host, '/$path', query);
     late final http.Response res;
     try {
-      res = await _http.get(uri, headers: {'x-apisports-key': ApiConfig.apiKey});
+      res = await _http
+          .get(uri, headers: {'x-apisports-key': ApiConfig.apiKey})
+          .timeout(requestTimeout);
+    } on TimeoutException {
+      throw ApiFootballException('/$path timed out after ${requestTimeout.inSeconds}s');
     } catch (e) {
       throw ApiFootballException('Network error calling /$path: $e');
     }

@@ -104,8 +104,11 @@ class Match {
     return dateShort;
   }
 
+  /// Hero score line for the detail header. A live match can briefly
+  /// have no goal data yet (feed lag right after kickoff) — show 0-0
+  /// rather than "null".
   String get heroScore =>
-      (isFinished || isLive) ? '$scoreA  –  $scoreB' : 'vs';
+      (isFinished || isLive) ? '${scoreA ?? 0}  –  ${scoreB ?? 0}' : 'vs';
 
   String get statusLabel {
     if (isFinished) return penalties != null ? 'Encerrado · pên.' : 'Encerrado';

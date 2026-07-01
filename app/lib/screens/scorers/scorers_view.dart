@@ -15,6 +15,9 @@ class ScorersView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scorers = repository.topScorers;
     return ListView(
+      // Keeps the scroll offset across tab switches (the AnimatedSwitcher
+      // in HomeShell rebuilds each tab from scratch).
+      key: const PageStorageKey('scorers_list'),
       padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
       children: [
         const Text('Artilheiros', style: AppTextStyles.sectionHeader),

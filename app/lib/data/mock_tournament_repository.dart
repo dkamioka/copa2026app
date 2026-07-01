@@ -375,12 +375,12 @@ class MockTournamentRepository implements TournamentRepository {
 
   static const Map<String, ({String group, String stat, List<(GameResult, String, String)> games})>
       _groupCampaigns = {
-    'BRA': (group: 'Grupo A · 1º', stat: '3J · 3V 0E 0D · 9 pts', games: [(GameResult.win, '3-0', 'SRB'), (GameResult.win, '2-0', 'KOR'), (GameResult.win, '2-1', 'CMR')]),
+    'BRA': (group: 'Grupo A · 1º', stat: '3J · 3V 0E 0D · 9 pts', games: [(GameResult.win, '3-0', 'SRB'), (GameResult.win, '2-0', 'KOR'), (GameResult.win, '1-0', 'MEX')]),
     'JPN': (group: 'Grupo B · 2º', stat: '3J · 2V 0E 1D · 6 pts', games: [(GameResult.win, '2-1', 'POL'), (GameResult.loss, '0-2', 'ARG'), (GameResult.win, '2-0', 'AUS')]),
     'FRA': (group: 'Grupo C · 1º', stat: '3J · 2V 1E 0D · 7 pts', games: [(GameResult.win, '2-0', 'DEN'), (GameResult.draw, '1-1', 'CRO'), (GameResult.win, '3-1', 'TUN')]),
     'SEN': (group: 'Grupo D · 2º', stat: '3J · 1V 1E 1D · 4 pts', games: [(GameResult.win, '2-1', 'GHA'), (GameResult.loss, '0-2', 'ESP'), (GameResult.draw, '1-1', 'NOR')]),
     'ARG': (group: 'Grupo B · 1º', stat: '3J · 3V 0E 0D · 9 pts', games: [(GameResult.win, '2-0', 'AUS'), (GameResult.win, '2-0', 'JPN'), (GameResult.win, '2-1', 'POL')]),
-    'MEX': (group: 'Grupo A · 2º', stat: '3J · 2V 0E 1D · 6 pts', games: [(GameResult.win, '2-1', 'KOR'), (GameResult.loss, '0-2', 'BRA'), (GameResult.win, '2-0', 'SRB')]),
+    'MEX': (group: 'Grupo A · 2º', stat: '3J · 2V 0E 1D · 6 pts', games: [(GameResult.win, '2-1', 'KOR'), (GameResult.loss, '0-1', 'BRA'), (GameResult.win, '2-0', 'SRB')]),
     'ESP': (group: 'Grupo D · 1º', stat: '3J · 3V 0E 0D · 9 pts', games: [(GameResult.win, '2-0', 'SEN'), (GameResult.win, '3-1', 'GHA'), (GameResult.win, '2-1', 'NOR')]),
     'CRO': (group: 'Grupo C · 2º', stat: '3J · 1V 2E 0D · 5 pts', games: [(GameResult.draw, '1-1', 'FRA'), (GameResult.win, '4-1', 'TUN'), (GameResult.draw, '0-0', 'DEN')]),
     'ENG': (group: 'Grupo E · 1º', stat: '3J · 2V 1E 0D · 7 pts', games: [(GameResult.win, '2-0', 'IRN'), (GameResult.draw, '1-1', 'USA'), (GameResult.win, '3-1', 'WAL')]),

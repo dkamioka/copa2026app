@@ -17,6 +17,12 @@ void main() {
       expect(ApiFootballMappers.roundFromLabel('Group Stage - 1'), isNull);
       expect(ApiFootballMappers.roundFromLabel('3rd Place Final'), isNull);
     });
+
+    test('does not mistake the 2026 Round of 32 for the Final', () {
+      expect(ApiFootballMappers.roundFromLabel('Round of 32'), isNull);
+      expect(ApiFootballMappers.roundFromLabel('1/16-finals'), isNull);
+      expect(ApiFootballMappers.roundFromLabel('16th Finals'), isNull);
+    });
   });
 
   test('matchFromFixture parses a finished match decided on penalties', () {
@@ -238,5 +244,44 @@ void main() {
     expect(away.length, 2);
     expect(away[0].icon, '🟥');
     expect(away[1].icon, '➕');
+  });
+
+  test('eventsFromJson keeps feed order for same-minute events (stable sort)', () {
+    final response = [
+      for (var i = 0; i < 12; i++)
+        {
+          'time': {'elapsed': 45},
+          'team': {'name': 'Brazil'},
+          'player': {'name': 'Player $i'},
+          'type': 'Goal',
+          'detail': 'Normal Goal',
+        },
+    ];
+
+    final events = ApiFootballMappers.eventsFromJson(response, 'Brazil');
+    expect([for (final e in events) e.player], [for (var i = 0; i < 12; i++) 'Player $i']);
+  });
+
+  test('scorersFromJson skips malformed entries without breaking rank order', () {
+    final response = [
+      {
+        'player': {'name': 'Mbappé', 'nationality': 'France'},
+        'statistics': [
+          {'goals': {'total': 6}},
+        ],
+      },
+      'not-a-map',
+      {
+        'player': {'name': 'Kane', 'nationality': 'England'},
+        'statistics': [
+          {'goals': {'total': 5}},
+        ],
+      },
+    ];
+
+    final scorers = ApiFootballMappers.scorersFromJson(response);
+    expect(scorers.length, 2);
+    expect(scorers[0].rank, 1);
+    expect(scorers[1].rank, 2);
   });
 }

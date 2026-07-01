@@ -23,8 +23,21 @@ class _AuroraBackgroundState extends State<AuroraBackground>
   @override
   void initState() {
     super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(seconds: 30))
-      ..repeat(reverse: true);
+    _c = AnimationController(vsync: this, duration: const Duration(seconds: 30));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The drifting blobs sit under a 60px blur that re-rasterizes every
+    // animated frame — respect the system Reduce Motion setting (and
+    // save the GPU work) by freezing the drift when it's on.
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    if (reduceMotion) {
+      _c.stop();
+    } else if (!_c.isAnimating) {
+      _c.repeat(reverse: true);
+    }
   }
 
   @override

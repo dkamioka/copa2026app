@@ -13,6 +13,9 @@ class GroupsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final groups = repository.groupStandings;
     return ListView.separated(
+      // Keeps the scroll offset across tab switches (the AnimatedSwitcher
+      // in HomeShell rebuilds each tab from scratch).
+      key: const PageStorageKey('groups_list'),
       padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
       itemCount: groups.length + 1,
       separatorBuilder: (context, i) => const SizedBox(height: 11),

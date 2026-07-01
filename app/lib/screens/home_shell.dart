@@ -25,6 +25,7 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   int _tab = 0;
+  bool _refreshing = false;
 
   static const _labels = ['Eliminatórias', 'Classificação', 'Artilheiros'];
 
@@ -42,10 +43,26 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Keep the Home Screen widget close to current whenever the user
-    // comes back to the app — WidgetKit's own refresh budget is scarce,
-    // so a foreground push is the most reliable way to keep it fresh.
     if (state == AppLifecycleState.resumed) {
+      _refreshData();
+    }
+  }
+
+  /// Re-pulls the tournament snapshot when the user comes back to the
+  /// app, so scores/standings don't stay frozen at launch-time values —
+  /// then mirrors the fresh data to the Home Screen widget (WidgetKit's
+  /// own refresh budget is scarce; a foreground push is the most
+  /// reliable way to keep it current).
+  Future<void> _refreshData() async {
+    if (_refreshing) return;
+    _refreshing = true;
+    try {
+      await widget.repository.refresh();
+      if (mounted) setState(() {});
+    } catch (_) {
+      // Keep showing the last good snapshot; next resume retries.
+    } finally {
+      _refreshing = false;
       HomeWidgetBridge.pushSnapshot(widget.repository);
     }
   }
