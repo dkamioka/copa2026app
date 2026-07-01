@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin: 0; }
+  @keyframes omf1 { from { transform: translate(0,0) scale(1); } to { transform: translate(34px,28px) scale(1.12); } }
+  @keyframes omf2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-30px,-26px) scale(1.1); } }
+  @keyframes omf3 { from { transform: translate(0,0) scale(1); } to { transform: translate(26px,-22px) scale(1.15); } }
+  @keyframes ompulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.82); } }
+  @keyframes omsheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes omfade { from { opacity: 0; } to { opacity: 1; } }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</helmet>
+
+<div style="min-height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#dfe4ee 0%,#c6ccdb 100%);padding:28px 0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;">
+  <div style="position:relative;width:410px;height:860px;background:#070708;border-radius:56px;padding:11px;box-shadow:0 44px 100px rgba(40,46,70,0.45), 0 0 0 2px rgba(255,255,255,0.5), inset 0 0 0 1px rgba(255,255,255,0.08);">
+    <div style="position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:{{ bg.base }};">
+
+      <div style="position:absolute;inset:0;overflow:hidden;">
+        <div style="position:absolute;width:72%;height:46%;left:-12%;top:-9%;border-radius:50%;background:{{ bg.c1 }};filter:blur(72px);opacity:0.6;animation:omf1 22s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute;width:76%;height:52%;right:-16%;bottom:-12%;border-radius:50%;background:{{ bg.c2 }};filter:blur(76px);opacity:0.55;animation:omf2 27s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute;width:62%;height:42%;left:8%;bottom:-6%;border-radius:50%;background:{{ bg.c3 }};filter:blur(70px);opacity:0.5;animation:omf3 24s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute;width:56%;height:36%;right:-10%;top:-6%;border-radius:50%;background:{{ bg.c4 }};filter:blur(68px);opacity:0.5;animation:omf1 29s ease-in-out infinite alternate-reverse;"></div>
+      </div>
+
+      <div style="position:absolute;top:0;left:0;right:0;height:50px;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:15px 28px 0;pointer-events:none;">
+        <span style="font-size:14px;font-weight:600;color:#16162e;font-variant-numeric:tabular-nums;">9:41</span>
+        <div style="display:flex;align-items:flex-end;gap:6px;">
+          <div style="display:flex;align-items:flex-end;gap:2px;height:11px;">
+            <div style="width:3px;height:4px;background:#16162e;border-radius:1px;"></div>
+            <div style="width:3px;height:6px;background:#16162e;border-radius:1px;"></div>
+            <div style="width:3px;height:8px;background:#16162e;border-radius:1px;"></div>
+            <div style="width:3px;height:11px;background:#16162e;border-radius:1px;"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#16162e;">5G</span>
+          <div style="display:flex;align-items:center;gap:1px;"><div style="width:22px;height:11px;border:1px solid rgba(22,22,46,0.5);border-radius:3px;padding:1.5px;box-sizing:border-box;display:flex;"><div style="flex:1;background:#16162e;border-radius:1px;"></div></div><div style="width:1.5px;height:4px;background:rgba(22,22,46,0.5);border-radius:0 1px 1px 0;"></div></div>
+        </div>
+      </div>
+
+      <sc-if value="{{ anyLive }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ live.onOpen }}" style="position:absolute;top:13px;left:50%;transform:translateX(-50%);z-index:40;background:#000;border-radius:20px;padding:7px 15px;display:flex;align-items:center;gap:9px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+          <span style="width:7px;height:7px;border-radius:50%;background:{{ live.color }};box-shadow:0 0 8px {{ live.color }};animation:ompulse 1.4s ease-in-out infinite;"></span>
+          <span style="font-size:12px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;">{{ live.aFlag }} {{ live.score }} {{ live.bFlag }}</span>
+          <span style="font-size:10.5px;color:{{ live.color }};font-weight:700;font-variant-numeric:tabular-nums;">{{ live.min }}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noLive }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:13px;left:50%;transform:translateX(-50%);z-index:40;width:120px;height:34px;background:#000;border-radius:19px;"></div>
+      </sc-if>
+
+      <div style="position:absolute;top:50px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:8px 18px 44px;display:flex;flex-direction:column;gap:13px;">
+
+        <div style="padding:4px 2px 0;">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+            <span style="font-size:11px;">🏆</span>
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.13em;color:rgba(22,22,46,0.5);text-transform:uppercase;">Copa do Mundo FIFA</span>
+            <span style="font-size:11px;color:rgba(22,22,46,0.32);">·</span>
+            <span style="font-size:11px;letter-spacing:0.04em;">🇺🇸 🇨🇦 🇲🇽</span>
+          </div>
+          <div style="font-size:23px;font-weight:800;color:#16162e;letter-spacing:-0.025em;">Copa do Mundo 2026<span style="font-size:11px;font-weight:600;vertical-align:super;opacity:0.5;">™</span></div>
+        </div>
+
+        <div style="display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.55);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,0.85);border-radius:16px;box-shadow:0 4px 18px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.9);">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.onSel }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.005em;color:{{ t.color }};background:{{ t.bg }};box-shadow:{{ t.shadow }};transition:all .2s ease;">{{ t.label }}</div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ isElim }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:13px;">
+
+            <sc-if value="{{ anyLive }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ live.onOpen }}" style="display:flex;align-items:center;gap:9px;padding:11px 15px;cursor:pointer;background:rgba(255,255,255,0.62);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid {{ live.border }};border-radius:18px;box-shadow:0 8px 30px rgba(30,30,70,0.1), inset 0 1px 0 rgba(255,255,255,0.95);">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ live.color }};box-shadow:0 0 10px {{ live.color }};animation:ompulse 1.4s ease-in-out infinite;flex:none;"></span>
+                <span style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:{{ live.color }};">AO VIVO</span>
+                <span style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:700;color:#16162e;">
+                  <span style="width:11px;height:11px;border-radius:4px;background:{{ live.aChip }};box-shadow:0 0 0 1px rgba(0,0,0,0.06);"></span>
+                  <span>{{ live.aFlag }}</span><span style="letter-spacing:0.02em;">{{ live.aCode }}</span>
+                  <span style="font-variant-numeric:tabular-nums;letter-spacing:0.04em;">{{ live.score }}</span>
+                  <span style="letter-spacing:0.02em;">{{ live.bCode }}</span><span>{{ live.bFlag }}</span>
+                  <span style="width:11px;height:11px;border-radius:4px;background:{{ live.bChip }};box-shadow:0 0 0 1px rgba(0,0,0,0.06);"></span>
+                </span>
+                <span style="font-size:12px;font-weight:700;color:{{ live.color }};font-variant-numeric:tabular-nums;flex:none;">{{ live.min }}</span>
+              </div>
+            </sc-if>
+
+            <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 2px;">
+              <span style="font-size:15px;font-weight:700;color:#16162e;letter-spacing:-0.01em;">Chave</span>
+              <span style="font-size:10.5px;color:rgba(22,22,46,0.42);font-weight:500;">arraste para explorar →</span>
+            </div>
+
+            <div ref="{{ setScroll }}" style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;display:flex;align-items:stretch;padding:2px 18px 10px;margin:0 -18px;">
+              <sc-for list="{{ bracketCols }}" as="col" hint-placeholder-count="4">
+                <sc-if value="{{ col.isRound }}" hint-placeholder-val="{{ true }}">
+                  <div data-col="{{ col.key }}" style="display:flex;flex-direction:column;width:182px;flex:none;">
+                    <div style="height:28px;display:flex;align-items:center;justify-content:center;">
+                      <span style="font-size:9.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(22,22,46,0.5);">{{ col.label }}</span>
+                    </div>
+                    <div style="height:620px;display:flex;flex-direction:column;justify-content:space-around;padding:0 5px;">
+                      <sc-for list="{{ col.matches }}" as="m" hint-placeholder-count="4">
+                        <div onClick="{{ m.onOpen }}" style="background:rgba(255,255,255,0.66);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,0.9);border-radius:14px;box-shadow:0 6px 22px rgba(30,30,70,0.12), inset 0 1px 0 rgba(255,255,255,0.95);padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:5px;">
+                          <span style="font-size:8.5px;font-weight:700;letter-spacing:0.03em;color:{{ m.footColor }};text-transform:uppercase;">{{ m.footLabel }}</span>
+                          <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="width:9px;height:9px;border-radius:3px;background:{{ m.aChip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                            <span style="font-size:13px;line-height:1;flex:none;">{{ m.aFlag }}</span>
+                            <span style="flex:1;font-size:12px;font-weight:{{ m.aWeight }};color:{{ m.aColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.aName }}</span>
+                            <span style="font-size:13px;font-weight:700;color:{{ m.aColor }};font-variant-numeric:tabular-nums;flex:none;">{{ m.aScore }}</span>
+                          </div>
+                          <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="width:9px;height:9px;border-radius:3px;background:{{ m.bChip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                            <span style="font-size:13px;line-height:1;flex:none;">{{ m.bFlag }}</span>
+                            <span style="flex:1;font-size:12px;font-weight:{{ m.bWeight }};color:{{ m.bColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.bName }}</span>
+                            <span style="font-size:13px;font-weight:700;color:{{ m.bColor }};font-variant-numeric:tabular-nums;flex:none;">{{ m.bScore }}</span>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ col.isConn }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;width:16px;flex:none;">
+                    <div style="height:28px;"></div>
+                    <div style="height:620px;display:flex;flex-direction:column;justify-content:space-around;">
+                      <sc-for list="{{ col.items }}" as="c" hint-placeholder-count="2">
+                        <div style="height:{{ c.h }}px;border-top:1px solid rgba(22,22,46,0.16);border-bottom:1px solid rgba(22,22,46,0.16);border-right:1px solid rgba(22,22,46,0.16);border-top-right-radius:9px;border-bottom-right-radius:9px;"></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+              </sc-for>
+            </div>
+
+            <div style="text-align:center;font-size:10.5px;color:rgba(22,22,46,0.42);font-weight:500;margin-top:-2px;">Toque em um jogo para ver lances, campanha e desfalques</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isGrupos }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div style="font-size:15px;font-weight:700;color:#16162e;padding:0 2px;">Fase de Grupos</div>
+            <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+              <div style="background:rgba(255,255,255,0.66);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,0.9);border-radius:18px;box-shadow:0 6px 22px rgba(30,30,70,0.1), inset 0 1px 0 rgba(255,255,255,0.95);padding:13px 14px;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13.5px;font-weight:800;color:#16162e;letter-spacing:-0.01em;">{{ g.letter }}</div>
+                <div style="display:grid;grid-template-columns:14px 1fr 26px 18px 18px 18px 18px 28px;gap:4px;align-items:center;font-size:9px;font-weight:700;letter-spacing:0.02em;color:rgba(22,22,46,0.4);text-transform:uppercase;padding:0 2px;">
+                  <span></span><span>Equipe</span>
+                  <span style="text-align:center;">Pts</span><span style="text-align:center;">J</span><span style="text-align:center;">V</span><span style="text-align:center;">E</span><span style="text-align:center;">D</span><span style="text-align:center;">SG</span>
+                </div>
+                <sc-for list="{{ g.rows }}" as="row" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:14px 1fr 26px 18px 18px 18px 18px 28px;gap:4px;align-items:center;font-size:11.5px;color:#16162e;font-variant-numeric:tabular-nums;background:{{ row.bg }};border-radius:8px;padding:5px 2px;">
+                    <span style="text-align:center;font-weight:700;color:{{ row.posColor }};font-size:10.5px;">{{ row.pos }}</span>
+                    <span style="display:flex;align-items:center;gap:6px;min-width:0;">
+                      <span style="width:9px;height:9px;border-radius:3px;background:{{ row.chip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                      <span style="font-size:12px;flex:none;">{{ row.flag }}</span>
+                      <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:{{ row.weight }};">{{ row.nome }}</span>
+                    </span>
+                    <span style="text-align:center;font-weight:800;">{{ row.pts }}</span>
+                    <span style="text-align:center;color:rgba(22,22,46,0.6);">{{ row.j }}</span>
+                    <span style="text-align:center;color:rgba(22,22,46,0.6);">{{ row.v }}</span>
+                    <span style="text-align:center;color:rgba(22,22,46,0.6);">{{ row.e }}</span>
+                    <span style="text-align:center;color:rgba(22,22,46,0.6);">{{ row.d }}</span>
+                    <span style="text-align:center;color:rgba(22,22,46,0.6);">{{ row.sg }}</span>
+                  </div>
+                </sc-for>
+                <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(22,22,46,0.42);font-weight:500;padding:0 2px;">
+                  <span style="width:8px;height:8px;border-radius:2px;background:rgba(34,197,94,0.5);"></span>Classificados para a fase final
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isArtil }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div style="font-size:15px;font-weight:700;color:#16162e;padding:0 2px;">Artilheiros</div>
+            <div style="background:rgba(255,255,255,0.66);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,0.9);border-radius:18px;box-shadow:0 6px 22px rgba(30,30,70,0.1), inset 0 1px 0 rgba(255,255,255,0.95);padding:6px 8px;display:flex;flex-direction:column;">
+              <sc-for list="{{ scorers }}" as="s" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:11px;padding:11px 8px;border-bottom:1px solid rgba(22,22,46,0.06);">
+                  <span style="width:18px;text-align:center;font-size:13px;font-weight:800;color:{{ s.rankColor }};font-variant-numeric:tabular-nums;">{{ s.rank }}</span>
+                  <span style="width:11px;height:11px;border-radius:4px;background:{{ s.chip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                  <span style="font-size:16px;flex:none;">{{ s.flag }}</span>
+                  <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+                    <span style="font-size:13.5px;font-weight:700;color:#16162e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.player }}</span>
+                    <span style="font-size:10.5px;color:rgba(22,22,46,0.5);">{{ s.country }}</span>
+                  </div>
+                  <span style="display:flex;align-items:baseline;gap:4px;flex:none;"><span style="font-size:19px;font-weight:800;color:#16162e;font-variant-numeric:tabular-nums;">{{ s.goals }}</span><span style="font-size:9.5px;color:rgba(22,22,46,0.45);font-weight:600;">gols</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(22,22,46,0.28);z-index:35;"></div>
+
+      <sc-if value="{{ showSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:50;">
+          <div onClick="{{ close }}" style="position:absolute;inset:0;background:rgba(20,22,44,0.28);animation:omfade .25s ease;"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:91%;background:rgba(255,255,255,0.74);backdrop-filter:blur(46px) saturate(180%);-webkit-backdrop-filter:blur(46px) saturate(180%);border-top:1px solid rgba(255,255,255,0.95);border-radius:32px 32px 0 0;box-shadow:0 -12px 60px rgba(30,30,70,0.22), inset 0 1px 0 rgba(255,255,255,1);display:flex;flex-direction:column;animation:omsheet .4s cubic-bezier(0.32,0.72,0,1);">
+            <div onClick="{{ close }}" style="padding:11px 0 6px;display:flex;justify-content:center;cursor:pointer;flex:none;">
+              <div style="width:38px;height:5px;border-radius:3px;background:rgba(22,22,46,0.22);"></div>
+            </div>
+            <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 20px 36px;display:flex;flex-direction:column;gap:18px;">
+
+              <div style="text-align:center;">
+                <div style="font-size:10.5px;font-weight:800;letter-spacing:0.13em;color:{{ sheet.accent }};text-transform:uppercase;">{{ sheet.stageLabel }}</div>
+                <div style="font-size:11px;color:rgba(22,22,46,0.55);margin-top:3px;">{{ sheet.venueLine }}</div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:6px;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                  <span style="font-size:46px;line-height:1;">{{ sheet.aFlag }}</span>
+                  <span style="font-size:13px;font-weight:700;color:#16162e;text-align:center;line-height:1.2;">{{ sheet.aName }}</span>
+                  <span style="width:30px;height:4px;border-radius:2px;background:{{ sheet.aChip }};"></span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;padding-top:8px;">
+                  <span style="font-size:36px;font-weight:800;color:#16162e;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ sheet.heroScore }}</span>
+                  <span style="font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:4px 11px;border-radius:999px;color:{{ sheet.statusColor }};background:{{ sheet.statusBg }};white-space:nowrap;">{{ sheet.statusLabel }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                  <span style="font-size:46px;line-height:1;">{{ sheet.bFlag }}</span>
+                  <span style="font-size:13px;font-weight:700;color:#16162e;text-align:center;line-height:1.2;">{{ sheet.bName }}</span>
+                  <span style="width:30px;height:4px;border-radius:2px;background:{{ sheet.bChip }};"></span>
+                </div>
+              </div>
+
+              <sc-if value="{{ sheet.isTbd }}" hint-placeholder-val="{{ false }}">
+                <div style="text-align:center;padding:20px 16px;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.85);border-radius:18px;font-size:12.5px;color:rgba(22,22,46,0.6);line-height:1.5;">Os times serão definidos ao fim da rodada anterior.</div>
+              </sc-if>
+
+              <sc-if value="{{ sheet.hasPens }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.85);border-radius:18px;box-shadow:0 6px 22px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.95);padding:15px 16px;display:flex;flex-direction:column;gap:12px;">
+                  <div style="text-align:center;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:{{ sheet.accent }};">Disputa de Pênaltis</div>
+                  <div style="text-align:center;font-size:27px;font-weight:800;color:#16162e;font-variant-numeric:tabular-nums;letter-spacing:0.02em;">{{ sheet.penLine }}</div>
+                  <div style="display:flex;flex-direction:column;gap:9px;align-items:center;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:19px;width:26px;text-align:center;">{{ sheet.aFlag }}</span>
+                      <div style="display:flex;gap:6px;">
+                        <sc-for list="{{ sheet.pensA }}" as="k" hint-placeholder-count="4">
+                          <span style="width:18px;height:18px;border-radius:50%;background:{{ k.bg }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800;">{{ k.mark }}</span>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:19px;width:26px;text-align:center;">{{ sheet.bFlag }}</span>
+                      <div style="display:flex;gap:6px;">
+                        <sc-for list="{{ sheet.pensB }}" as="k" hint-placeholder-count="4">
+                          <span style="width:18px;height:18px;border-radius:50%;background:{{ k.bg }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800;">{{ k.mark }}</span>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="text-align:center;font-size:11.5px;font-weight:600;color:rgba(22,22,46,0.7);">{{ sheet.penWinner }} avança de fase</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sheet.hasEvents }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(22,22,46,0.45);margin-bottom:8px;">Lances do Jogo</div>
+                  <div style="background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.85);border-radius:18px;box-shadow:0 6px 22px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.95);padding:12px 14px;display:flex;flex-direction:column;gap:2px;">
+                    <sc-for list="{{ sheet.events }}" as="e" hint-placeholder-count="4">
+                      <div style="display:grid;grid-template-columns:1fr 48px 1fr;align-items:center;gap:8px;padding:5px 0;">
+                        <div style="display:flex;justify-content:flex-end;align-items:center;gap:7px;min-height:18px;">
+                          <sc-if value="{{ e.isA }}" hint-placeholder-val="{{ true }}">
+                            <span style="font-size:12.5px;color:#16162e;text-align:right;font-weight:500;">{{ e.text }}</span>
+                            <span style="font-size:13px;">{{ e.icon }}</span>
+                          </sc-if>
+                        </div>
+                        <div style="text-align:center;"><span style="font-size:10.5px;font-weight:700;color:rgba(22,22,46,0.6);background:rgba(22,22,46,0.06);padding:2.5px 8px;border-radius:999px;font-variant-numeric:tabular-nums;">{{ e.min }}</span></div>
+                        <div style="display:flex;justify-content:flex-start;align-items:center;gap:7px;min-height:18px;">
+                          <sc-if value="{{ e.isB }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size:13px;">{{ e.icon }}</span>
+                            <span style="font-size:12.5px;color:#16162e;font-weight:500;">{{ e.text }}</span>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sheet.hasH2H }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">
+                    <span style="font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(22,22,46,0.45);">Confrontos Diretos</span>
+                    <span style="font-size:10px;color:rgba(22,22,46,0.4);">arraste →</span>
+                  </div>
+                  <div style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin:0 -2px;">
+                    <sc-for list="{{ sheet.h2h }}" as="h" hint-placeholder-count="3">
+                      <div style="scroll-snap-align:start;flex:none;width:152px;background:rgba(255,255,255,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.85);border-radius:16px;box-shadow:0 5px 18px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.95);padding:13px;display:flex;flex-direction:column;gap:7px;">
+                        <span style="font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(22,22,46,0.5);line-height:1.3;min-height:22px;">{{ h.comp }}</span>
+                        <span style="font-size:17px;font-weight:700;color:#16162e;font-variant-numeric:tabular-nums;">{{ h.fixture }}</span>
+                        <span style="font-size:10px;color:rgba(22,22,46,0.45);">{{ h.date }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sheet.hasH2H }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(22,22,46,0.45);margin-bottom:8px;">Campanha nos Grupos</div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ sheet.groups }}" as="g" hint-placeholder-count="2">
+                      <div style="background:rgba(255,255,255,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.85);border-radius:16px;box-shadow:0 5px 18px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.95);padding:12px 14px;display:flex;flex-direction:column;gap:9px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                          <span style="width:13px;height:13px;border-radius:4px;background:{{ g.chip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                          <span style="font-size:19px;">{{ g.flag }}</span>
+                          <span style="flex:1;font-size:13.5px;font-weight:700;color:#16162e;">{{ g.name }}</span>
+                          <span style="font-size:10.5px;font-weight:600;color:rgba(22,22,46,0.6);">{{ g.groupLabel }}</span>
+                        </div>
+                        <div style="font-size:11px;color:rgba(22,22,46,0.55);font-variant-numeric:tabular-nums;">{{ g.statLine }}</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                          <sc-for list="{{ g.games }}" as="gm" hint-placeholder-count="3">
+                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:rgba(22,22,46,0.8);background:rgba(22,22,46,0.05);padding:3.5px 8px;border-radius:8px;font-variant-numeric:tabular-nums;">
+                              <span style="width:6px;height:6px;border-radius:50%;background:{{ gm.color }};"></span>{{ gm.score }} {{ gm.opp }}
+                            </span>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sheet.hasH2H }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(22,22,46,0.45);margin-bottom:8px;">Desfalques & Novidades</div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ sheet.news }}" as="n" hint-placeholder-count="2">
+                      <div style="background:rgba(255,255,255,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.85);border-radius:16px;box-shadow:0 5px 18px rgba(30,30,70,0.08), inset 0 1px 0 rgba(255,255,255,0.95);padding:12px 14px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                          <span style="width:12px;height:12px;border-radius:4px;background:{{ n.chip }};flex:none;box-shadow:0 0 0 1px rgba(0,0,0,0.08);"></span>
+                          <span style="font-size:15px;">{{ n.flag }}</span>
+                          <span style="font-size:12.5px;font-weight:700;color:#16162e;">{{ n.name }}</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <sc-for list="{{ n.items }}" as="it" hint-placeholder-count="2">
+                            <div style="display:flex;align-items:flex-start;gap:9px;">
+                              <span style="font-size:13px;line-height:1.3;flex:none;">{{ it.icon }}</span>
+                              <span style="font-size:11.5px;color:rgba(22,22,46,0.82);line-height:1.4;">{{ it.text }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+            </div>
+          </div>
+        </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:434,&quot;height&quot;:924},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#e11d6b&quot;,&quot;options&quot;:[&quot;#e11d6b&quot;,&quot;#0a84ff&quot;,&quot;#7c3aed&quot;,&quot;#16a34a&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Estilo&quot;},&quot;bgTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Claro&quot;,&quot;Brisa&quot;,&quot;Aurora&quot;],&quot;default&quot;:&quot;Claro&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Estilo&quot;},&quot;favorito&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Nenhum&quot;,&quot;Brasil&quot;,&quot;Argentina&quot;,&quot;França&quot;,&quot;Espanha&quot;,&quot;Inglaterra&quot;,&quot;Países Baixos&quot;,&quot;Portugal&quot;,&quot;Alemanha&quot;,&quot;Japão&quot;,&quot;México&quot;,&quot;Croácia&quot;,&quot;Senegal&quot;,&quot;Suíça&quot;,&quot;Estados Unidos&quot;,&quot;Uruguai&quot;,&quot;Colômbia&quot;],&quot;default&quot;:&quot;Nenhum&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportamento&quot;},&quot;showLiveActivity&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamento&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'elim', openId: null };
+
+  constructor(props) { super(props); this.init(); }
+
+  setScroll = (el) => { this.scroll = el; if (el && this.state.tab === 'elim') setTimeout(() => this.scrollToRound('QF'), 50); };
+
+  init() {
+    const F = { BRA:'🇧🇷', JPN:'🇯🇵', FRA:'🇫🇷', SEN:'🇸🇳', ARG:'🇦🇷', MEX:'🇲🇽', ESP:'🇪🇸', CRO:'🇭🇷', ENG:'🏴', SUI:'🇨🇭', NED:'🇳🇱', USA:'🇺🇸', POR:'🇵🇹', URU:'🇺🇾', GER:'🇩🇪', COL:'🇨🇴',
+      SRB:'🇷🇸', KOR:'🇰🇷', POL:'🇵🇱', AUS:'🇦🇺', DEN:'🇩🇰', TUN:'🇹🇳', GHA:'🇬🇭', NOR:'🇳🇴', WAL:'🏴', IRN:'🇮🇷', ECU:'🇪🇨', QAT:'🇶🇦', MAR:'🇲🇦', CRC:'🇨🇷', NGA:'🇳🇬', KSA:'🇸🇦' };
+    const N = { BRA:'Brasil', JPN:'Japão', FRA:'França', SEN:'Senegal', ARG:'Argentina', MEX:'México', ESP:'Espanha', CRO:'Croácia', ENG:'Inglaterra', SUI:'Suíça', NED:'Países Baixos', USA:'Estados Unidos', POR:'Portugal', URU:'Uruguai', GER:'Alemanha', COL:'Colômbia',
+      SRB:'Sérvia', KOR:'Coreia do Sul', POL:'Polônia', AUS:'Austrália', DEN:'Dinamarca', TUN:'Tunísia', GHA:'Gana', NOR:'Noruega', WAL:'País de Gales', IRN:'Irã', ECU:'Equador', QAT:'Catar', MAR:'Marrocos', CRC:'Costa Rica', NGA:'Nigéria', KSA:'Arábia Saudita' };
+    const COL2 = { BRA:['#fedd00','#009b3a'], JPN:['#142a6e','#bc002d'], FRA:['#0055a4','#ef4135'], SEN:['#00853f','#fdef42'], ARG:['#6cace4','#f6b40e'], MEX:['#006847','#ce1126'], ESP:['#aa151b','#f1bf00'], CRO:['#c8102e','#0b4ea2'], ENG:['#cf142b','#e9eef5'], SUI:['#d52b1e','#e9eef5'], NED:['#21468b','#f36c21'], USA:['#3c3b6e','#b22234'], POR:['#006600','#da291c'], URU:['#4977bc','#f6d800'], GER:['#1a1a1a','#dd0000'], COL:['#fcd116','#003893'],
+      SRB:['#0c4076','#c6363c'], KOR:['#0047a0','#cd2e3a'], POL:['#dc143c','#e9eef5'], AUS:['#00843d','#ffcd00'], DEN:['#c60c30','#e9eef5'], TUN:['#e70013','#e9eef5'], GHA:['#006b3f','#fcd116'], NOR:['#ba0c2f','#00205b'], WAL:['#00805e','#c8102e'], IRN:['#239f40','#da0000'], ECU:['#ffd100','#0072ce'], QAT:['#8a1538','#e9eef5'], MAR:['#c1272d','#006233'], CRC:['#002b7f','#ce1126'], NGA:['#008751','#e9eef5'], KSA:['#006c35','#e9eef5'] };
+    const RES = { W:'#16a34a', D:'#d97706', L:'#dc2626' };
+    const dim = 'rgba(22,22,46,0.5)';
+    const cg = (c) => { const x = COL2[c] || ['#999','#ccc']; return 'linear-gradient(135deg,' + x[0] + ' 0%,' + x[0] + ' 48%,' + x[1] + ' 52%,' + x[1] + ' 100%)'; };
+    this.cg = cg; this.F = F; this.N = N;
+
+    const GROUPS = {
+      BRA:{grp:'Grupo A · 1º',line:'3J · 3V 0E 0D · 9 pts',games:[['W','3-0','SRB'],['W','2-0','KOR'],['W','2-1','CMR']]},
+      JPN:{grp:'Grupo B · 2º',line:'3J · 2V 0E 1D · 6 pts',games:[['W','2-1','POL'],['L','0-2','ARG'],['W','2-0','AUS']]},
+      FRA:{grp:'Grupo C · 1º',line:'3J · 2V 1E 0D · 7 pts',games:[['W','2-0','DEN'],['D','1-1','CRO'],['W','3-1','TUN']]},
+      SEN:{grp:'Grupo D · 2º',line:'3J · 1V 1E 1D · 4 pts',games:[['W','2-1','GHA'],['L','0-2','ESP'],['D','1-1','NOR']]},
+      ARG:{grp:'Grupo B · 1º',line:'3J · 3V 0E 0D · 9 pts',games:[['W','2-0','AUS'],['W','2-0','JPN'],['W','2-1','POL']]},
+      MEX:{grp:'Grupo A · 2º',line:'3J · 2V 0E 1D · 6 pts',games:[['W','2-1','KOR'],['L','0-2','BRA'],['W','2-0','SRB']]},
+      ESP:{grp:'Grupo D · 1º',line:'3J · 3V 0E 0D · 9 pts',games:[['W','2-0','SEN'],['W','3-1','GHA'],['W','2-1','NOR']]},
+      CRO:{grp:'Grupo C · 2º',line:'3J · 1V 2E 0D · 5 pts',games:[['D','1-1','FRA'],['W','4-1','TUN'],['D','0-0','DEN']]},
+      ENG:{grp:'Grupo E · 1º',line:'3J · 2V 1E 0D · 7 pts',games:[['W','2-0','IRN'],['D','1-1','USA'],['W','3-1','WAL']]},
+      SUI:{grp:'Grupo F · 2º',line:'3J · 1V 2E 0D · 5 pts',games:[['W','3-2','ECU'],['D','1-1','NED'],['D','0-0','QAT']]},
+      NED:{grp:'Grupo F · 1º',line:'3J · 2V 1E 0D · 7 pts',games:[['W','2-0','QAT'],['D','1-1','SUI'],['W','3-1','ECU']]},
+      USA:{grp:'Grupo E · 2º',line:'3J · 1V 2E 0D · 5 pts',games:[['D','1-1','WAL'],['D','1-1','ENG'],['W','1-0','IRN']]},
+      POR:{grp:'Grupo G · 1º',line:'3J · 3V 0E 0D · 9 pts',games:[['W','3-2','MAR'],['W','2-0','CRC'],['W','1-0','COL']]},
+      URU:{grp:'Grupo H · 2º',line:'3J · 2V 0E 1D · 6 pts',games:[['W','2-0','KSA'],['L','0-1','GER'],['W','3-1','NGA']]},
+      GER:{grp:'Grupo H · 1º',line:'3J · 2V 1E 0D · 7 pts',games:[['W','4-1','NGA'],['W','1-0','URU'],['D','1-1','KSA']]},
+      COL:{grp:'Grupo G · 2º',line:'3J · 2V 0E 1D · 6 pts',games:[['W','2-0','CRC'],['L','0-1','POR'],['W','1-0','MAR']]}
+    };
+
+    const INTEL = {
+      BRA:[['➕','Alex Sandro fora (lesão na coxa) — Militão atua na lateral'],['🟨','Casemiro pendurado, a um amarelo da suspensão']],
+      FRA:[['🟥','Ferland Mendy suspenso — expulso contra o Brasil'],['➕','Ousmane Dembélé é dúvida (coxa)']],
+      ARG:[['🟨','Mac Allister pendurado, arrisca suspensão'],['➕','Ángel Di María recuperado, deve começar']],
+      ESP:[['🟨','Le Normand a um amarelo da suspensão'],['➕','Pedri passou em teste físico de última hora']],
+      ENG:[['🟥','Declan Rice suspenso — acúmulo de cartões amarelos'],['➕','Bukayo Saka volta de lesão']],
+      NED:[['➕','Frenkie de Jong é grande dúvida (panturrilha)'],['🟨','Virgil van Dijk pendurado']],
+      POR:[['🟨','Bruno Fernandes a um amarelo da suspensão'],['➕','João Cancelo recuperado']],
+      GER:[['🟥','Antonio Rüdiger suspenso — expulso contra a Colômbia'],['➕','Jamal Musiala volta aos treinos']],
+      JPN:[['🟨','Wataru Endō pendurado contra o Brasil'],['➕','Restante do elenco à disposição']],
+      SEN:[['➕','Sem novos problemas físicos'],['🟨','Pape Sarr pendurado']],
+      MEX:[['➕','Elenco completo à disposição']],
+      CRO:[['➕','Time-base totalmente recuperado']],
+      SUI:[['🟨','Granit Xhaka foi advertido']],
+      USA:[['➕','Elenco completo à disposição']],
+      URU:[['🟥','Zagueiro suspenso para a próxima fase']],
+      COL:[['➕','Sem problemas de lesão no elenco']]
+    };
+
+    const H2HMAP = {
+      'BRA-FRA':[['🇫🇷 1 – 0 🇧🇷','Copa do Mundo · Quartas','01 Jul 2006'],['🇫🇷 3 – 0 🇧🇷','Copa do Mundo · Final','12 Jul 1998'],['🇧🇷 3 – 0 🇫🇷','Amistoso','09 Jun 2013'],['🇫🇷 1 – 1 🇧🇷','Amistoso','26 Mar 2015']],
+      'ARG-ESP':[['🇪🇸 6 – 1 🇦🇷','Amistoso','13 Nov 2018'],['🇦🇷 4 – 1 🇪🇸','Amistoso','07 Set 2010'],['🇪🇸 2 – 1 🇦🇷','Amistoso','03 Mar 2010']],
+      'ENG-NED':[['🇳🇱 2 – 1 🏴','Eurocopa 2024 · Semi','10 Jul 2024'],['🏴 0 – 0 🇳🇱','Amistoso','23 Mar 2018'],['🇳🇱 3 – 1 🏴','Eurocopa 1988','15 Jun 1988']],
+      'POR-GER':[['🇩🇪 4 – 2 🇵🇹','Copa do Mundo 2014','16 Jun 2014'],['🇩🇪 4 – 2 🇵🇹','Eurocopa 2020','19 Jun 2021'],['🇵🇹 1 – 0 🇩🇪','Eurocopa 2000','20 Jun 2000']],
+      'BRA-JPN':[['🇧🇷 1 – 0 🇯🇵','Amistoso','10 Jul 2022'],['🇧🇷 4 – 0 🇯🇵','Amistoso','10 Nov 2017'],['🇯🇵 2 – 2 🇧🇷','Copa das Confederações','22 Jun 2005']]
+    };
+
+    const grp = (c) => { const g = GROUPS[c]; return { chip:cg(c), flag:F[c], name:N[c], groupLabel:g.grp, statLine:g.line, games:g.games.map(x=>({score:x[1],opp:x[2],color:RES[x[0]]})) }; };
+    const intel = (c) => (INTEL[c]||[['➕','Elenco à disposição']]).map(x=>({icon:x[0],text:x[1]}));
+    const h2h = (a,b) => {
+      const k = H2HMAP[a+'-'+b] || H2HMAP[b+'-'+a] || [[F[a]+' 1 – 0 '+F[b],'Amistoso','Nov 2023'],[F[b]+' 2 – 2 '+F[a],'Amistoso','Jun 2019'],[F[a]+' 0 – 1 '+F[b],'Amistoso','Mar 2014']];
+      return k.map(x=>({fixture:x[0],comp:x[1],date:x[2]}));
+    };
+    const E = (min,t,p,s) => ({ min:min+"'", isA:s==='A', isB:s==='B', icon:(t==='g'||t==='p')?'⚽':(t==='y'?'🟨':'🟥'), text:p+(t==='p'?' (pên)':'') });
+    const STAGE = { R16:'Oitavas de Final', QF:'Quartas de Final', SF:'Semifinal', F:'Final' };
+
+    const mk = (o) => {
+      const a=o.a, b=o.b, tbd=!!o.tbd;
+      const aF=a?F[a]:'⚪', aN=a?N[a]:(o.an||'A definir'), aC=a||'A definir', aCh=a?cg(a):'rgba(22,22,46,0.15)';
+      const bF=b?F[b]:'⚪', bN=b?N[b]:(o.bn||'A definir'), bC=b||'A definir', bCh=b?cg(b):'rgba(22,22,46,0.15)';
+      const played=o.st==='ft', live=o.st==='live';
+      const pens = o.pens || null;
+      const aWin=played&&(pens?pens.winner==='A':o.sa>o.sb), bWin=played&&(pens?pens.winner==='B':o.sb>o.sa), tie=played&&!pens&&o.sa===o.sb;
+      const aCol = a ? ((played&&!aWin&&!tie)?dim:'#16162e') : dim;
+      const bCol = b ? ((played&&!bWin&&!tie)?dim:'#16162e') : dim;
+      const aScore=(played||live)?String(o.sa):'';
+      const bScore=(played||live)?String(o.sb):'';
+      let foot, footC;
+      if (played) { foot=pens?('Pên · '+pens.a.reduce((x,y)=>x+y,0)+'-'+pens.b.reduce((x,y)=>x+y,0)):'Encerrado'; footC='rgba(22,22,46,0.45)'; }
+      else if (live) { foot='● Ao vivo · '+o.min; footC=this.props.accent||'#e11d6b'; }
+      else { foot=o.foot||'A definir'; footC='rgba(22,22,46,0.5)'; }
+      const br = { aFlag:aF, aName:aN, aChip:aCh, aColor:aCol, aWeight:aWin?'700':'600', aScore, bFlag:bF, bName:bN, bChip:bCh, bColor:bCol, bWeight:bWin?'700':'600', bScore, footLabel:foot, footColor:footC };
+
+      let heroScore, sLabel, sColor, sBg;
+      const acc = this.props.accent || '#e11d6b';
+      if (played) { heroScore=o.sa+'  –  '+o.sb; sLabel=pens?'Encerrado · pên.':'Encerrado'; sColor='rgba(22,22,46,0.7)'; sBg='rgba(22,22,46,0.07)'; }
+      else if (live) { heroScore=o.sa+'  –  '+o.sb; sLabel='Ao vivo · '+o.min; sColor=acc; sBg='rgba(225,29,107,0.12)'; }
+      else { heroScore='vs'; sLabel=o.dlong||'A definir'; sColor='#16162e'; sBg='rgba(22,22,46,0.07)'; }
+
+      const ev = o.ev||[];
+      const kick = (arr) => arr.map(k => ({ bg: k===1 ? '#16a34a' : '#dc2626', mark: k===1 ? '✓' : '✗' }));
+      const pd = pens ? { line: pens.a.reduce((x,y)=>x+y,0) + '  –  ' + pens.b.reduce((x,y)=>x+y,0), winnerName: (pens.winner==='A'?aN:bN), a: kick(pens.a), b: kick(pens.b) } : null;
+      const sheet = {
+        aFlag:aF, aName:aN, aChip:aCh, bFlag:bF, bName:bN, bChip:bCh, heroScore, statusLabel:sLabel, statusColor:sColor, statusBg:sBg,
+        stageLabel:STAGE[o.round], venueLine:(o.ven||'Local a definir')+'   ·   '+(o.dlong||''),
+        hasPens:!!pd, penLine:pd?pd.line:'', penWinner:pd?pd.winnerName:'', pensA:pd?pd.a:[], pensB:pd?pd.b:[],
+        hasEvents:ev.length>0, events:ev,
+        hasH2H:!tbd, h2h:tbd?[]:h2h(aC,bC),
+        groups: tbd?[]:[grp(a),grp(b)],
+        news: tbd?[]:[{chip:cg(a),flag:F[a],name:N[a],items:intel(a)},{chip:cg(b),flag:F[b],name:N[b],items:intel(b)}],
+        isTbd:tbd
+      };
+      return { id:o.id, round:o.round, br, sheet, live:{ aFlag:aF, aCode:aC, aChip:aCh, bFlag:bF, bCode:bC, bChip:bCh, score:(played||live)?(o.sa+' – '+o.sb):'', min:o.min||'' } };
+    };
+
+    const all = [
+      mk({id:'r1',round:'R16',a:'BRA',b:'JPN',st:'ft',sa:3,sb:1,ven:'SoFi Stadium, Los Angeles',dlong:'Qui, 25/06 · 21:00',ev:[E(12,'g','Raphinha','A'),E(34,'g','Mitoma','B'),E(51,'g','Vinícius Jr','A'),E(88,'g','Endrick','A')]}),
+      mk({id:'r2',round:'R16',a:'FRA',b:'SEN',st:'ft',sa:2,sb:0,ven:'Mercedes-Benz Stadium, Atlanta',dlong:'Qui, 25/06 · 18:00',ev:[E(27,'g','Griezmann','A'),E(69,'g','Mbappé','A')]}),
+      mk({id:'r3',round:'R16',a:'ARG',b:'MEX',st:'ft',sa:2,sb:1,ven:'AT&T Stadium, Dallas',dlong:'Sex, 26/06 · 21:00',ev:[E(9,'g','Messi','A'),E(44,'g','L. Martínez','A'),E(73,'g','R. Jiménez','B')]}),
+      mk({id:'r4',round:'R16',a:'ESP',b:'CRO',st:'ft',sa:4,sb:2,ven:'NRG Stadium, Houston',dlong:'Sex, 26/06 · 18:00',ev:[E(15,'g','Morata','A'),E(31,'g','Kramarić','B'),E(40,'g','Yamal','A'),E(58,'g','Dani Olmo','A'),E(70,'g','Budimir','B'),E(82,'g','Oyarzabal','A')]}),
+      mk({id:'r5',round:'R16',a:'ENG',b:'SUI',st:'ft',sa:1,sb:0,ven:'Lincoln Financial Field, Filadélfia',dlong:'Sáb, 27/06 · 21:00',ev:[E(62,'g','Kane','A'),E(78,'y','Rice','A')]}),
+      mk({id:'r6',round:'R16',a:'NED',b:'USA',st:'ft',sa:2,sb:1,ven:'Lumen Field, Seattle',dlong:'Sáb, 27/06 · 18:00',ev:[E(31,'g','Gakpo','A'),E(55,'g','Pulisic','B'),E(78,'g','Depay','A')]}),
+      mk({id:'r7',round:'R16',a:'POR',b:'URU',st:'ft',sa:3,sb:2,ven:'Hard Rock Stadium, Miami',dlong:'Dom, 28/06 · 21:00',ev:[E(5,'g','Ronaldo','A'),E(29,'g','Núñez','B'),E(47,'g','B. Fernandes','A'),E(63,'g','Valverde','B'),E(90,'g','Leão','A')]}),
+      mk({id:'r8',round:'R16',a:'GER',b:'COL',st:'ft',sa:2,sb:1,ven:'Levi’s Stadium, San Francisco',dlong:'Dom, 28/06 · 18:00',ev:[E(40,'g','Havertz','A'),E(66,'g','Wirtz','A'),E(81,'g','J. Rodríguez','B')]}),
+
+      mk({id:'q1',round:'QF',a:'BRA',b:'FRA',st:'ft',sa:1,sb:1,pens:{a:[1,1,1,1],b:[1,0,1,0],winner:'A'},ven:'Mercedes-Benz Stadium, Atlanta',dlong:'Ter, 30/06 · 21:00',ev:[E(23,'g','Vinícius Jr','A'),E(41,'y','Casemiro','A'),E(58,'p','Mbappé','B'),E(84,'r','Mendy','B')]}),
+      mk({id:'q2',round:'QF',a:'ARG',b:'ESP',st:'live',sa:1,sb:1,min:"67'",ven:'Hard Rock Stadium, Miami',dlong:'Hoje · 18:00',ev:[E(19,'g','L. Martínez','A'),E(38,'y','Yamal','B'),E(55,'g','Yamal','B')]}),
+      mk({id:'q3',round:'QF',a:'ENG',b:'NED',st:'up',foot:'Hoje · 21:00',ven:'MetLife Stadium, Nova York',dlong:'Hoje · 21:00'}),
+      mk({id:'q4',round:'QF',a:'POR',b:'GER',st:'up',foot:'Amanhã · 21:00',ven:'AT&T Stadium, Dallas',dlong:'Amanhã, 02/07 · 21:00'}),
+
+      mk({id:'s1',round:'SF',a:'BRA',b:null,bn:'Vencedor QF2',st:'up',tbd:true,foot:'Sáb · 04/07',ven:'AT&T Stadium, Dallas',dlong:'Sáb, 04/07 · 20:00'}),
+      mk({id:'s2',round:'SF',a:null,b:null,an:'Vencedor QF3',bn:'Vencedor QF4',st:'up',tbd:true,foot:'Dom · 05/07',ven:'MetLife Stadium, Nova York',dlong:'Dom, 05/07 · 20:00'}),
+
+      mk({id:'f1',round:'F',a:null,b:null,an:'Vencedor SF1',bn:'Vencedor SF2',st:'up',tbd:true,foot:'Dom · 12/07',ven:'MetLife Stadium, Nova York',dlong:'Dom, 12/07 · 16:00'})
+    ];
+
+    this.byId = {}; this.byRound = { R16:[], QF:[], SF:[], F:[] };
+    all.forEach(m => { this.byId[m.id] = m; this.byRound[m.round].push(m); });
+
+    const STAND = [
+      ['Grupo A', [['BRA',9,3,3,0,0,'+6'],['MEX',6,3,2,0,1,'+2'],['SRB',3,3,1,0,2,'-3'],['KOR',0,3,0,0,3,'-5']]],
+      ['Grupo B', [['ARG',9,3,3,0,0,'+5'],['JPN',6,3,2,0,1,'+1'],['POL',3,3,1,0,2,'-2'],['AUS',0,3,0,0,3,'-4']]],
+      ['Grupo C', [['FRA',7,3,2,1,0,'+4'],['CRO',5,3,1,2,0,'+2'],['DEN',4,3,1,1,1,'0'],['TUN',0,3,0,0,3,'-6']]],
+      ['Grupo D', [['ESP',9,3,3,0,0,'+6'],['SEN',4,3,1,1,1,'0'],['GHA',3,3,1,0,2,'-2'],['NOR',1,3,0,1,2,'-4']]],
+      ['Grupo E', [['ENG',7,3,2,1,0,'+4'],['USA',5,3,1,2,0,'+1'],['WAL',3,3,1,0,2,'-2'],['IRN',1,3,0,1,2,'-3']]],
+      ['Grupo F', [['NED',7,3,2,1,0,'+4'],['SUI',5,3,1,2,0,'+1'],['ECU',4,3,1,1,1,'0'],['QAT',1,3,0,1,2,'-3']]],
+      ['Grupo G', [['POR',9,3,3,0,0,'+5'],['COL',6,3,2,0,1,'+2'],['MAR',4,3,1,1,1,'-1'],['CRC',0,3,0,0,3,'-6']]],
+      ['Grupo H', [['GER',7,3,2,1,0,'+3'],['URU',6,3,2,0,1,'+2'],['NGA',3,3,1,0,2,'-1'],['KSA',1,3,0,1,2,'-4']]]
+    ];
+    this.groups = STAND.map(([letter, rows]) => ({
+      letter,
+      rows: rows.map((r, i) => ({
+        pos: i + 1, nome: N[r[0]], flag: F[r[0]], chip: cg(r[0]),
+        pts: r[1], j: r[2], v: r[3], e: r[4], d: r[5], sg: r[6],
+        bg: i < 2 ? 'rgba(34,197,94,0.12)' : 'transparent',
+        posColor: i < 2 ? '#16a34a' : 'rgba(22,22,46,0.45)',
+        weight: i < 2 ? '700' : '500'
+      }))
+    }));
+
+    const SC = [['Kylian Mbappé','FRA',6],['Harry Kane','ENG',5],['Vinícius Jr','BRA',4],['Lautaro Martínez','ARG',4],['Lamine Yamal','ESP',3],['Cristiano Ronaldo','POR',3],['Cody Gakpo','NED',3],['Jamal Musiala','GER',2]];
+    this.scorers = SC.map((s, i) => ({ rank: i + 1, player: s[0], country: N[s[1]], flag: F[s[1]], chip: cg(s[1]), goals: s[2], rankColor: i === 0 ? (this.props.accent || '#e11d6b') : 'rgba(22,22,46,0.5)' }));
+  }
+
+  open(id) { this.setState({ openId: id }); }
+  close = () => { this.setState({ openId: null }); };
+  selectTab(t) { this.setState({ tab: t }); if (t === 'elim') setTimeout(() => this.scrollToRound('QF'), 60); }
+  scrollToRound(k) { const c = this.scroll; if (!c) return; const el = c.querySelector('[data-col="' + k + '"]'); if (el) c.scrollTo({ left: Math.max(0, el.offsetLeft - 18) }); }
+
+  renderVals() {
+    const PAL = {
+      Claro:  { base:'#eef1f7', c1:'#c7d2fe', c2:'#bbf7d0', c3:'#fde2c4', c4:'#bfdbfe' },
+      Brisa:  { base:'#ecf4f3', c1:'#a7e3d8', c2:'#bfe0fb', c3:'#d8e9b8', c4:'#bdece0' },
+      Aurora: { base:'#f1ecf9', c1:'#dcc6f7', c2:'#c6d4f7', c3:'#f7d6e8', c4:'#cfe4f7' }
+    };
+    const bg = PAL[this.props.bgTheme] || PAL.Claro;
+    const accent = this.props.accent || '#e11d6b';
+    const liveOn = this.props.showLiveActivity !== false;
+
+    const fav = (this.props.favorito && this.props.favorito !== 'Nenhum') ? this.props.favorito : null;
+    const RD = (key, label) => ({ isRound:true, key, label, matches: this.byRound[key].map(m => { const o = Object.assign({ onOpen: () => this.open(m.id) }, m.br); if (fav) { if (o.aName === fav) o.aName = '⭐ ' + o.aName; if (o.bName === fav) o.bName = '⭐ ' + o.bName; } return o; }) });
+    const CN = (n, h) => ({ isConn:true, items: Array.from({ length:n }, () => ({ h })) });
+    const bracketCols = [ RD('R16','Oitavas'), CN(4,77.5), RD('QF','Quartas'), CN(2,155), RD('SF','Semifinais'), CN(1,310), RD('F','Final') ];
+
+    const tabsDef = [['elim','Eliminatórias'],['grupos','Classificação'],['artilheiros','Artilheiros']];
+    const tabs = tabsDef.map(([k,l]) => ({
+      key:k, label:l, onSel:()=>this.selectTab(k),
+      color: this.state.tab===k ? '#16162e' : 'rgba(22,22,46,0.55)',
+      bg: this.state.tab===k ? '#ffffff' : 'transparent',
+      shadow: this.state.tab===k ? '0 2px 8px rgba(30,30,70,0.12)' : 'none'
+    }));
+
+    const lm = this.byId['q2'];
+    const live = Object.assign({}, lm.live, { onOpen:()=>this.open('q2'), color:accent, border:'rgba(225,29,107,0.4)' });
+
+    const om = this.state.openId ? this.byId[this.state.openId] : null;
+    const sheet = om ? Object.assign({ accent }, om.sheet) : null;
+
+    return {
+      bg, bracketCols, tabs,
+      isElim: this.state.tab==='elim', isGrupos: this.state.tab==='grupos', isArtil: this.state.tab==='artilheiros',
+      groups: this.groups, scorers: this.scorers,
+      anyLive: liveOn, noLive: !liveOn, live,
+      showSheet: !!om, sheet,
+      close: this.close, setScroll: this.setScroll
+    };
+  }
+}
+</script>
+</body>
+</html>
