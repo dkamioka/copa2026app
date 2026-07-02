@@ -5,28 +5,38 @@ The app reads all data through one interface, `TournamentRepository`
 
 - **`MockTournamentRepository`** — the offline illustrative dataset
   (same content as the original design). Used automatically when no API
-  key is provided, so a fresh clone runs with zero setup.
+  key/proxy is provided, so a fresh clone runs with zero setup.
 - **`ApiFootballRepository`** (`lib/data/api_football/`) — live data from
   [API-Football](https://www.api-football.com/) v3.
 
 ## Running with live data
 
-Pass your API-Football key at run/build time via `--dart-define`. The key
-is **never** stored in source:
+**Production (proxy — the only mode that should ship):** deploy the
+caching proxy in [`../proxy/`](../proxy/worker.js) — a Cloudflare Worker
+that holds the API key as a server-side secret and collapses all users
+into a few edge-cached upstream calls — then point the build at it. No
+key ships in the binary:
+
+```bash
+flutter build ipa --dart-define=APIFOOTBALL_PROXY=copa2026.YOUR-SUBDOMAIN.workers.dev
+```
+
+**Development (direct key):** pass your API-Football key via
+`--dart-define`. The key is **never** stored in source — and must never
+ship in a release build (embedded in a public binary it's shared by
+every install and can't be revoked without an app update):
 
 ```bash
 # Run on a connected device
 flutter run --dart-define=APIFOOTBALL_KEY=YOUR_KEY_HERE
-
-# Build a release IPA
-flutter build ipa --dart-define=APIFOOTBALL_KEY=YOUR_KEY_HERE
 ```
 
 In Xcode (if you run from there instead of the CLI), add the same
 `--dart-define` under the Runner scheme's *Run → Arguments → Arguments
 Passed On Launch*, or build via the CLI command above.
 
-With no key, `ApiConfig.useMock` is `true` and the app uses the mock.
+With neither define, `ApiConfig.useMock` is `true` and the app uses the
+mock.
 
 ## How it maps to the app
 

@@ -16,10 +16,10 @@ Future<void> _settle(WidgetTester tester) async {
 void main() {
   setUp(() {
     PackageInfo.setMockInitialValues(
-      appName: 'Copa do Mundo 2026',
+      appName: 'Mundial 2026',
       packageName: 'com.veogroup.worldcup2026',
-      version: '1.1.0',
-      buildNumber: '2',
+      version: '1.2.0',
+      buildNumber: '3',
       buildSignature: '',
     );
   });
@@ -27,7 +27,7 @@ void main() {
     await tester.pumpWidget(WorldCup2026App(repository: MockTournamentRepository()));
     await _settle(tester);
 
-    expect(find.textContaining('Copa do Mundo 2026'), findsOneWidget);
+    expect(find.textContaining('Mundial 2026'), findsOneWidget);
     expect(find.text('Chave'), findsOneWidget);
     expect(find.text('AO VIVO'), findsOneWidget);
   });
@@ -82,6 +82,6 @@ void main() {
     await tester.pumpWidget(WorldCup2026App(repository: MockTournamentRepository()));
     await _settle(tester);
 
-    expect(find.text('v1.1.0 (2)'), findsOneWidget);
+    expect(find.text('v1.2.0 (3)'), findsOneWidget);
   });
 }

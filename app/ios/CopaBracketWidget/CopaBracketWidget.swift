@@ -52,7 +52,7 @@ struct CopaBracketWidgetSmallView: View {
   var body: some View {
     background(
       VStack(alignment: .leading, spacing: 8) {
-        Eyebrow(text: "Copa do Mundo 2026")
+        Eyebrow(text: "Mundial 2026")
         Spacer()
         if let live = entry.snapshot.live {
           VStack(spacing: 6) {
@@ -107,7 +107,7 @@ struct CopaBracketWidgetMediumView: View {
     background(
       VStack(alignment: .leading, spacing: 10) {
         HStack {
-          Eyebrow(text: "🏆 Copa do Mundo 2026")
+          Eyebrow(text: "🏆 Mundial 2026")
           Spacer()
           Text(entry.snapshot.featuredRoundLabel)
             .font(.system(size: 9.5, weight: .bold))
@@ -133,7 +133,7 @@ struct CopaBracketWidgetLargeView: View {
     background(
       VStack(alignment: .leading, spacing: 10) {
         HStack {
-          Eyebrow(text: "🏆 Copa do Mundo 2026")
+          Eyebrow(text: "🏆 Mundial 2026")
           Spacer()
           Text(entry.snapshot.featuredRoundLabel)
             .font(.system(size: 9.5, weight: .bold))
@@ -181,7 +181,7 @@ struct CopaBracketWidget: Widget {
     StaticConfiguration(kind: kind, provider: CopaWidgetProvider()) { entry in
       CopaBracketWidgetEntryView(entry: entry)
     }
-    .configurationDisplayName("Copa do Mundo 2026")
+    .configurationDisplayName("Mundial 2026")
     .description("Acompanhe o jogo ao vivo e a rodada atual das eliminatórias.")
     .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
   }

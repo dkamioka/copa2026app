@@ -204,7 +204,7 @@ class _Header extends StatelessWidget {
           children: [
             const Text('🏆', style: TextStyle(fontSize: 11)),
             const SizedBox(width: 7),
-            const Text('COPA DO MUNDO FIFA', style: AppTextStyles.eyebrow),
+            const Text('MUNDIAL 2026', style: AppTextStyles.eyebrow),
             const SizedBox(width: 7),
             Text('·', style: TextStyle(color: AppColors.ink.withValues(alpha: 0.32), fontSize: 11)),
             const SizedBox(width: 7),
@@ -214,18 +214,10 @@ class _Header extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 5),
-        Text.rich(
-          const TextSpan(
-            style: AppTextStyles.title,
-            children: [
-              TextSpan(text: 'Copa do Mundo 2026'),
-              TextSpan(
-                text: '™',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.inkFainter),
-              ),
-            ],
-          ),
-        ),
+        // Brand name is deliberately generic ("Mundial 2026"): FIFA
+        // aggressively enforces its marks ("FIFA", "World Cup", "Copa do
+        // Mundo 2026") and App Review rejects on 5.2.1 for using them.
+        const Text('Mundial 2026', style: AppTextStyles.title),
       ],
     );
   }

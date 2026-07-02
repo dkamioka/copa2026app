@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../data/tournament_repository.dart';
 import '../../models/match.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/empty_state_card.dart';
 import '../match_detail/match_detail_sheet.dart';
 import 'bracket_column.dart';
 import 'bracket_connector.dart';
@@ -69,6 +70,28 @@ class _BracketViewState extends State<BracketView> {
   Widget build(BuildContext context) {
     final repo = widget.repository;
     final live = repo.liveMatch;
+    final hasMatches = _rounds.any((r) => repo.matchesByRound(r).isNotEmpty);
+
+    if (!hasMatches) {
+      // Honest pre-knockout state: before the bracket is drawn the live
+      // feed legitimately has no knockout fixtures — say so instead of
+      // rendering four empty columns.
+      return ListView(
+        key: const PageStorageKey('bracket_list'),
+        padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
+        children: const [
+          Text('Chave', style: AppTextStyles.sectionHeader),
+          SizedBox(height: 10),
+          EmptyStateCard(
+            emoji: '🗓️',
+            title: 'Chave em definição',
+            message: 'Os confrontos do mata-mata aparecem aqui assim que os '
+                'classificados forem definidos. Acompanhe a fase de grupos '
+                'na aba Classificação.',
+          ),
+        ],
+      );
+    }
 
     return ListView(
       // Keeps the scroll offset across tab switches (the AnimatedSwitcher

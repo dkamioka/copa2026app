@@ -83,11 +83,14 @@ class ApiFootballClient {
 
   Future<Map<String, dynamic>> _getRaw(String path, Map<String, String> query) async {
     final uri = Uri.https(ApiConfig.host, '/$path', query);
+    // In proxy mode the key lives server-side — send it only when
+    // talking directly to api-sports.io (dev-with-key mode).
+    final headers = ApiConfig.useProxy
+        ? const <String, String>{}
+        : {'x-apisports-key': ApiConfig.apiKey};
     late final http.Response res;
     try {
-      res = await _http
-          .get(uri, headers: {'x-apisports-key': ApiConfig.apiKey})
-          .timeout(requestTimeout);
+      res = await _http.get(uri, headers: headers).timeout(requestTimeout);
     } on TimeoutException {
       throw ApiFootballException('/$path timed out after ${requestTimeout.inSeconds}s');
     } catch (e) {

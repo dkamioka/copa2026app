@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import '../../data/tournament_repository.dart';
 import '../../models/scorer.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/empty_state_card.dart';
 import '../../widgets/surfaces.dart';
 import '../../widgets/team_chip.dart';
 
@@ -14,6 +15,22 @@ class ScorersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scorers = repository.topScorers;
+    if (scorers.isEmpty) {
+      return ListView(
+        key: const PageStorageKey('scorers_list'),
+        padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
+        children: const [
+          Text('Artilheiros', style: AppTextStyles.sectionHeader),
+          SizedBox(height: 10),
+          EmptyStateCard(
+            emoji: '⚽',
+            title: 'Ainda sem gols',
+            message: 'O ranking de artilheiros aparece aqui depois dos '
+                'primeiros gols do torneio.',
+          ),
+        ],
+      );
+    }
     return ListView(
       // Keeps the scroll offset across tab switches (the AnimatedSwitcher
       // in HomeShell rebuilds each tab from scratch).

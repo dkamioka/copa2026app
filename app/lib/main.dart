@@ -73,7 +73,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Copa do Mundo 2026',
+      title: 'Mundial 2026',
       debugShowCheckedModeBanner: false,
       theme: kAppTheme,
       home: FutureBuilder<_Bootstrapped>(
@@ -108,7 +108,7 @@ class WorldCup2026App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Copa do Mundo 2026',
+      title: 'Mundial 2026',
       debugShowCheckedModeBanner: false,
       theme: kAppTheme,
       home: HomeShell(repository: repository),
@@ -168,7 +168,7 @@ class _LoadingScreen extends StatelessWidget {
               Text('🏆', style: TextStyle(fontSize: 44)),
               SizedBox(height: 16),
               Text(
-                'Copa do Mundo 2026',
+                'Mundial 2026',
                 style: TextStyle(
                   fontFamily: '.SF Pro Display',
                   fontSize: 20,

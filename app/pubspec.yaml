@@ -22,7 +22,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # - PATCH: correção sem funcionalidade nova
 # - BUILD (+n): incrementa a CADA build enviado ao TestFlight/App Store
 # A versão em execução aparece no cabeçalho do app (para feedback de QA).
-version: 1.1.0+2
+version: 1.2.0+3
 
 environment:
   sdk: ^3.12.2
