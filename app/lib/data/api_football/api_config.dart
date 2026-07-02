@@ -37,8 +37,12 @@ abstract final class ApiConfig {
   /// FIFA World Cup league id in API-Football.
   static const int worldCupLeagueId = 1;
 
-  /// Season year to query. The 2026 World Cup is season "2026".
-  static const int season = 2026;
+  /// Season year to query. Defaults to the 2026 World Cup; overridable
+  /// for QA — free API-Football plans only expose seasons 2022–2024, so
+  /// end-to-end testing against real data uses e.g.
+  /// `--dart-define=APIFOOTBALL_SEASON=2022`.
+  static const int season =
+      int.fromEnvironment('APIFOOTBALL_SEASON', defaultValue: 2026);
 
   /// When true, the app uses [MockTournamentRepository] instead of the
   /// live API. Auto-derived: no proxy and no key ⇒ mock.

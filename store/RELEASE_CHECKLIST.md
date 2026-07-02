@@ -5,8 +5,13 @@ suas (conta Apple, Xcode, dispositivo físico).
 
 ## 1. Infra de dados (30 min) 👤
 
-- [ ] Assinar um plano pago da API-Football (api-football.com) — o free
-      tier (100 req/dia) não sobrevive a usuários reais.
+- [ ] Assinar um plano pago da API-Football (api-football.com). **Duplo
+      bloqueio confirmado em teste real**: o free tier (100 req/dia) não
+      sobrevive a usuários reais **e não tem acesso à temporada 2026**
+      (planos free só leem 2022–2024 — o app cairia no modo exemplo).
+- [ ] **Rotacionar a chave atual** (ela circulou fora do cofre) no painel
+      da API-Football antes do launch, e colocá-la apenas no secret do
+      worker.
 - [ ] Deploy do proxy de cache (conta Cloudflare gratuita serve):
       ```bash
       cd proxy

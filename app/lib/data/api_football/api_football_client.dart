@@ -53,7 +53,11 @@ class ApiFootballClient {
     }
 
     final all = <dynamic>[];
-    final first = await _getRaw(path, {...query, 'page': '1'});
+    // No `page` param on the first call: several endpoints (e.g.
+    // /fixtures) reject the field outright with an error envelope —
+    // verified against the live service. Endpoints that do paginate
+    // report paging.total > 1, and only then do we send page numbers.
+    final first = await _getRaw(path, query);
     final firstResponse = first['response'];
     if (firstResponse is List) all.addAll(firstResponse);
 

@@ -60,7 +60,30 @@ mock.
 This keeps request usage low enough to develop on the free tier
 (100 req/day). During the tournament you'd want the $50/mo Starter plan.
 
+## QA against real data (free-tier key)
+
+Free API-Football plans **cannot read season 2026** (they're limited to
+2022–2024 — a paid plan is mandatory for production). The full live
+pipeline is still verifiable end-to-end against the completed 2022 World
+Cup, whose data is stable and fully known:
+
+```bash
+flutter test test/live_api_integration_test.dart \
+  --dart-define=APIFOOTBALL_KEY=your_key \
+  --dart-define=APIFOOTBALL_SEASON=2022
+```
+
+The same `APIFOOTBALL_SEASON` define also works with `flutter run`, so
+the whole app can be driven by real (historical) data on a free key.
+This suite is what caught the `page` parameter bug below — keep running
+it before releases (~6 requests of quota per run).
+
 ## Known limitations / notes
+
+- **`page` query param**: several endpoints (`/fixtures` among them)
+  reject an explicit `page` field with an error envelope. The client
+  therefore never sends `page` on the first request and only paginates
+  when `paging.total > 1` (verified against the live service).
 
 - **Suspensions** aren't a first-class field in any football API — they're
   derived from the `/injuries` feed's `reason` (e.g. "Red Card",

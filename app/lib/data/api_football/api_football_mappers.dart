@@ -166,6 +166,15 @@ abstract final class ApiFootballMappers {
         final teamMap = row['team'] as Map<String, dynamic>? ?? const {};
         final all = row['all'] as Map<String, dynamic>? ?? const {};
         letter = _ptGroup(row['group'] as String? ?? letter);
+        // The API marks advancing teams via `description` (verified on
+        // real data: "Promotion - …" on qualified rows, null otherwise).
+        // Prefer it over assuming top-2: the 2026 format also advances
+        // the 8 best third-placed teams. Fall back to top-2 when the
+        // feed hasn't populated descriptions.
+        final description = row['description'] as String?;
+        final qualified = description != null
+            ? description.toLowerCase().contains('promotion')
+            : i < 2;
         rows.add(GroupStandingRow(
           team: TeamLookup.resolve(teamMap['name'] as String? ?? '?'),
           points: _asInt(row['points']) ?? 0,
@@ -174,7 +183,7 @@ abstract final class ApiFootballMappers {
           draws: _asInt(all['draw']) ?? 0,
           losses: _asInt(all['lose']) ?? 0,
           goalDiff: _asInt(row['goalsDiff']) ?? 0,
-          qualified: i < 2,
+          qualified: qualified,
         ));
       }
       if (rows.isNotEmpty) out.add(GroupStanding(letter: letter, rows: rows));

@@ -19,7 +19,7 @@ void main() {
       appName: 'Mundial 2026',
       packageName: 'com.veogroup.worldcup2026',
       version: '1.2.0',
-      buildNumber: '3',
+      buildNumber: '4',
       buildSignature: '',
     );
   });
@@ -82,6 +82,6 @@ void main() {
     await tester.pumpWidget(WorldCup2026App(repository: MockTournamentRepository()));
     await _settle(tester);
 
-    expect(find.text('v1.2.0 (3)'), findsOneWidget);
+    expect(find.text('v1.2.0 (4)'), findsOneWidget);
   });
 }
