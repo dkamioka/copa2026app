@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import 'data/api_football/api_config.dart';
 import 'data/api_football/api_football_repository.dart';
+import 'data/football_data/football_data_config.dart';
+import 'data/football_data/football_data_repository.dart';
 import 'data/mock_tournament_repository.dart';
 import 'data/tournament_repository.dart';
 import 'screens/home_shell.dart';
@@ -44,7 +46,24 @@ class AppBootstrap extends StatefulWidget {
 class _AppBootstrapState extends State<AppBootstrap> {
   late Future<_Bootstrapped> _future = _bootstrap();
 
+  /// Data-source priority: football-data.org (free tier covers the
+  /// live 2026 tournament) > API-Football (paid alternative with richer
+  /// detail) > offline mock. Whichever live source is configured but
+  /// unreachable degrades to the mock with a notice.
   Future<_Bootstrapped> _bootstrap() async {
+    if (FootballDataConfig.enabled) {
+      final fd = FootballDataRepository();
+      try {
+        await fd.refresh();
+        HomeWidgetBridge.pushSnapshot(fd);
+        return _Bootstrapped(fd, null);
+      } catch (_) {
+        fd.dispose();
+        return _mockBootstrap(
+          'Sem conexão com os dados ao vivo — exibindo dados de exemplo.',
+        );
+      }
+    }
     if (!ApiConfig.useMock) {
       final api = ApiFootballRepository();
       try {

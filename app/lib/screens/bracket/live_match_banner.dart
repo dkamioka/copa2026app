@@ -24,18 +24,21 @@ class LiveMatchBanner extends StatefulWidget {
 }
 
 class _LiveMatchBannerState extends State<LiveMatchBanner> {
-  late int _minute = _parseMinute();
+  /// Null when the data source doesn't report a live minute — the
+  /// banner then shows just "AO VIVO" and nothing ticks.
+  late int? _minute = _parseMinute();
   Timer? _timer;
 
-  int _parseMinute() =>
-      int.tryParse(widget.match.liveMinute?.replaceAll("'", '') ?? '') ?? 0;
+  int? _parseMinute() =>
+      int.tryParse(widget.match.liveMinute?.replaceAll("'", '') ?? '');
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 25), (_) {
-      if (_minute >= 90) return;
-      setState(() => _minute++);
+      final m = _minute;
+      if (m == null || m >= 90) return;
+      setState(() => _minute = m + 1);
     });
   }
 
@@ -108,15 +111,16 @@ class _LiveMatchBannerState extends State<LiveMatchBanner> {
                 ],
               ),
             ),
-            Text(
-              "$_minute'",
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: AppColors.accent,
-                fontFeatures: [FontFeature.tabularFigures()],
+            if (_minute != null)
+              Text(
+                "$_minute'",
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.accent,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
               ),
-            ),
           ],
         ),
       ),

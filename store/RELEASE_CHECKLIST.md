@@ -3,23 +3,27 @@
 Itens marcados 🤖 já estão prontos no repositório; itens 👤 exigem ações
 suas (conta Apple, Xcode, dispositivo físico).
 
-## 1. Infra de dados (30 min) 👤
+## 1. Infra de dados (30 min, custo ZERO) 👤
 
-- [ ] Assinar um plano pago da API-Football (api-football.com). **Duplo
-      bloqueio confirmado em teste real**: o free tier (100 req/dia) não
-      sobrevive a usuários reais **e não tem acesso à temporada 2026**
-      (planos free só leem 2022–2024 — o app cairia no modo exemplo).
-- [ ] **Rotacionar a chave atual** (ela circulou fora do cofre) no painel
-      da API-Football antes do launch, e colocá-la apenas no secret do
-      worker.
+A fonte de produção é o **football-data.org** — o free tier cobre a Copa
+2026 inteira (validado por teste de integração contra o feed ao vivo).
+Nenhum plano pago é necessário.
+
+- [ ] **Rotacionar o token** do football-data.org (o atual circulou fora
+      do cofre, inclusive em chats) — em football-data.org/client,
+      regenere e use o novo APENAS como secret do worker.
 - [ ] Deploy do proxy de cache (conta Cloudflare gratuita serve):
       ```bash
       cd proxy
       npx wrangler deploy
-      npx wrangler secret put APIFOOTBALL_KEY   # cola a chave paga
+      npx wrangler secret put FOOTBALLDATA_TOKEN   # cola o token novo
       ```
       Anote a URL (ex.: `copa2026.SEU-SUBDOMINIO.workers.dev`).
-- [ ] Teste rápido: `curl 'https://copa2026.SEU-SUBDOMINIO.workers.dev/standings?league=1&season=2026'`
+- [ ] Teste rápido:
+      `curl 'https://copa2026.SEU-SUBDOMINIO.workers.dev/fd/v4/competitions/WC/standings'`
+- [ ] (Opcional, pós-launch) API-Football pago como upgrade de dados —
+      adiciona timeline de lances, minuto ao vivo e desfalques; o adapter
+      já está pronto (`APIFOOTBALL_KEY`/secret no worker).
 
 ## 2. Projeto no Xcode (1–2 h) 👤
 
@@ -39,7 +43,7 @@ suas (conta Apple, Xcode, dispositivo físico).
 
 ```bash
 cd app
-flutter build ipa --dart-define=APIFOOTBALL_PROXY=copa2026.SEU-SUBDOMINIO.workers.dev
+flutter build ipa --dart-define=FOOTBALLDATA_PROXY=copa2026.SEU-SUBDOMINIO.workers.dev
 ```
 
 - [ ] Upload: Xcode Organizer (ou `xcrun altool`/Transporter).
@@ -87,5 +91,5 @@ flutter build ipa --dart-define=APIFOOTBALL_PROXY=copa2026.SEU-SUBDOMINIO.worker
 
 - [ ] Release manual → publicar.
 - [ ] Smoke test da versão de produção baixada da loja.
-- [ ] Monitorar quota da API no painel da API-Football no primeiro dia.
+- [ ] Monitorar consumo upstream no painel do Cloudflare Worker no primeiro dia.
 - [ ] Começar a Fase 1 do ROADMAP.md (share cards + push + Live Activity).

@@ -70,6 +70,20 @@ abstract final class TeamLookup {
     'southafrica': 'RSA',
     'capeverde': 'CPV',
     'capeverdeislands': 'CPV',
+    'bosniaherzegovina': 'BIH',
+    'bosniaandherzegovina': 'BIH',
+    'congodr': 'COD',
+    'drcongo': 'COD',
+    'czechia': 'CZE',
+    'czechrepublic': 'CZE',
+    'haiti': 'HAI',
+    'iraq': 'IRQ',
+    'sweden': 'SWE',
+    'turkey': 'TUR',
+    'turkiye': 'TUR',
+    // "Curaçao" loses its ç to normalization ([^a-z] strips it).
+    'curacao': 'CUW',
+    'curaao': 'CUW',
   };
 
   static String _normalize(String name) =>

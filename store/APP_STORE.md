@@ -50,7 +50,7 @@ Leve, sem cadastro e sem anúncios. Feito para quem quer abrir, ver o
 essencial em segundos e voltar pro jogo.
 
 Este app não é afiliado, licenciado ou endossado pela FIFA ou por
-qualquer confederação. Dados fornecidos por API-Football.
+qualquer confederação. Dados fornecidos por football-data.org.
 ```
 
 ## Notas da versão (1.2.0)
@@ -91,7 +91,7 @@ comunicam. Legendas curtas podem entrar num update.
 
 ```
 This app displays publicly available football tournament data (scores,
-standings, top scorers) licensed from API-Football (api-football.com).
+standings, top scorers) provided by football-data.org.
 It is not affiliated with FIFA and does not use FIFA trademarks or
 assets. No login is required; all features are immediately accessible.
 ```

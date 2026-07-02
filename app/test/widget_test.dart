@@ -18,8 +18,8 @@ void main() {
     PackageInfo.setMockInitialValues(
       appName: 'Mundial 2026',
       packageName: 'com.veogroup.worldcup2026',
-      version: '1.2.0',
-      buildNumber: '4',
+      version: '1.3.0',
+      buildNumber: '5',
       buildSignature: '',
     );
   });
@@ -82,6 +82,6 @@ void main() {
     await tester.pumpWidget(WorldCup2026App(repository: MockTournamentRepository()));
     await _settle(tester);
 
-    expect(find.text('v1.2.0 (4)'), findsOneWidget);
+    expect(find.text('v1.3.0 (5)'), findsOneWidget);
   });
 }

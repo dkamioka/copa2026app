@@ -54,6 +54,14 @@ const Map<String, Team> kTeams = {
   'NZL': Team(code: 'NZL', name: 'Nova Zelândia', flag: '🇳🇿', colorA: Color(0xFF1A1A1A), colorB: Color(0xFFE9EEF5)),
   'RSA': Team(code: 'RSA', name: 'África do Sul', flag: '🇿🇦', colorA: Color(0xFFFFB612), colorB: Color(0xFF007A4D)),
   'CPV': Team(code: 'CPV', name: 'Cabo Verde', flag: '🇨🇻', colorA: Color(0xFF003893), colorB: Color(0xFFCF2027)),
+  'BIH': Team(code: 'BIH', name: 'Bósnia', flag: '🇧🇦', colorA: Color(0xFF002F6C), colorB: Color(0xFFFECB00)),
+  'COD': Team(code: 'COD', name: 'RD Congo', flag: '🇨🇩', colorA: Color(0xFF007FFF), colorB: Color(0xFFF7D618)),
+  'CZE': Team(code: 'CZE', name: 'Tchéquia', flag: '🇨🇿', colorA: Color(0xFFD7141A), colorB: Color(0xFF11457E)),
+  'HAI': Team(code: 'HAI', name: 'Haiti', flag: '🇭🇹', colorA: Color(0xFF00209F), colorB: Color(0xFFD21034)),
+  'IRQ': Team(code: 'IRQ', name: 'Iraque', flag: '🇮🇶', colorA: Color(0xFF007A3D), colorB: Color(0xFFCE1126)),
+  'SWE': Team(code: 'SWE', name: 'Suécia', flag: '🇸🇪', colorA: Color(0xFFFFCD00), colorB: Color(0xFF005293)),
+  'TUR': Team(code: 'TUR', name: 'Turquia', flag: '🇹🇷', colorA: Color(0xFFE30A17), colorB: Color(0xFFE9EEF5)),
+  'CUW': Team(code: 'CUW', name: 'Curaçao', flag: '🇨🇼', colorA: Color(0xFF002B7F), colorB: Color(0xFFF9E814)),
 };
 
 Team team(String code) => kTeams[code]!;
