@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../data/tournament_repository.dart';
 import '../theme/app_theme.dart';
@@ -137,6 +138,32 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   }
 }
 
+/// Small "v1.2.3 (4)" tag in the header, so feedback and bug reports can
+/// name the exact SemVer build they came from.
+class _VersionTag extends StatelessWidget {
+  const _VersionTag();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final info = snapshot.data;
+        if (info == null) return const SizedBox.shrink();
+        return Text(
+          'v${info.version} (${info.buildNumber})',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
+            color: AppColors.ink.withValues(alpha: 0.35),
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _NoticeBanner extends StatelessWidget {
   const _NoticeBanner({required this.text});
   final String text;
@@ -182,6 +209,8 @@ class _Header extends StatelessWidget {
             Text('·', style: TextStyle(color: AppColors.ink.withValues(alpha: 0.32), fontSize: 11)),
             const SizedBox(width: 7),
             const Text('🇺🇸 🇨🇦 🇲🇽', style: TextStyle(fontSize: 11, letterSpacing: 0.6)),
+            const Spacer(),
+            const _VersionTag(),
           ],
         ),
         const SizedBox(height: 5),

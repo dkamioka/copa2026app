@@ -147,16 +147,18 @@ class _RoundJumpChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 6),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      // The visual chip stays compact, but the tappable area around it
+      // is padded up to ~44pt (Apple HIG minimum touch target).
+      child: Padding(
+        padding: const EdgeInsets.only(left: 6, top: 9, bottom: 9),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
           decoration: BoxDecoration(
             color: const Color(0x0F16162E),
             borderRadius: BorderRadius.circular(999),
@@ -164,7 +166,7 @@ class _RoundJumpChip extends StatelessWidget {
           child: Text(
             round.shortLabel,
             style: const TextStyle(
-              fontSize: 9.5,
+              fontSize: 10.5,
               fontWeight: FontWeight.w700,
               color: AppColors.inkFainter,
             ),

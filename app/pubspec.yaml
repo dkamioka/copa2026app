@@ -16,7 +16,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+# Semantic Versioning (https://semver.org): MAJOR.MINOR.PATCH+BUILD.
+# - MAJOR: mudança incompatível de comportamento/dados
+# - MINOR: nova funcionalidade visível ao usuário
+# - PATCH: correção sem funcionalidade nova
+# - BUILD (+n): incrementa a CADA build enviado ao TestFlight/App Store
+# A versão em execução aparece no cabeçalho do app (para feedback de QA).
+version: 1.1.0+2
 
 environment:
   sdk: ^3.12.2
@@ -37,6 +43,10 @@ dependencies:
 
   # HTTP client for the live API-Football data source.
   http: ^1.2.2
+
+  # Runtime app version/build number, shown in the header so testers can
+  # report feedback against the exact build they're running.
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:
