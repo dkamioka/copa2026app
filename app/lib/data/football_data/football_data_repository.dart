@@ -1,9 +1,12 @@
 import '../../models/group_standing.dart';
 import '../../models/match.dart';
 import '../../models/match_detail.dart';
+import '../../models/match_event.dart';
 import '../../models/scorer.dart';
 import '../../models/team.dart';
 import '../api_football/team_lookup.dart';
+import '../espn/espn_events_client.dart';
+import '../espn/espn_events_mappers.dart';
 import '../tournament_repository.dart';
 import 'football_data_client.dart';
 import 'football_data_config.dart';
@@ -18,12 +21,23 @@ import 'football_data_mappers.dart';
 /// Free-tier gaps, degraded gracefully: no goal/card timeline (events
 /// stay empty → section hidden), no live minute, no venue, no injuries.
 class FootballDataRepository implements TournamentRepository {
-  FootballDataRepository({FootballDataClient? client})
-      : _client = client ?? FootballDataClient();
+  FootballDataRepository({FootballDataClient? client, EspnEventsClient? espnClient})
+      : _client = client ?? FootballDataClient(),
+        _espn = espnClient ?? EspnEventsClient();
 
   final FootballDataClient _client;
 
+  /// Supplemental, unofficial source for the goal/card timeline only —
+  /// football-data's free tier has none. Best-effort: any failure just
+  /// leaves the timeline empty.
+  final EspnEventsClient _espn;
+
+  /// Match id → ESPN event id, so a reopened match skips the
+  /// scoreboard lookup.
+  final Map<String, String> _espnEventIds = {};
+
   final Map<Round, List<Match>> _byRound = {
+    Round.r32: [],
     Round.r16: [],
     Round.qf: [],
     Round.sf: [],
@@ -62,7 +76,13 @@ class FootballDataRepository implements TournamentRepository {
     );
     _scorers = FootballDataMappers.scorersFromJson(results[2]);
     _indexStandings();
+    _lastUpdatedAt = DateTime.now();
   }
+
+  DateTime? _lastUpdatedAt;
+
+  @override
+  DateTime? get lastUpdatedAt => _lastUpdatedAt;
 
   /// Ingests the full fixture list; returns the resolved names of every
   /// team that reached the knockout phase (used to flag qualification
@@ -90,9 +110,9 @@ class FootballDataRepository implements TournamentRepository {
         continue;
       }
 
-      // Any knockout appearance (including LAST_32 and the 3rd-place
-      // match, which the bracket itself doesn't render) proves the team
-      // advanced from its group.
+      // Any knockout appearance (including the 3rd-place match, which
+      // the bracket itself doesn't render) proves the team advanced
+      // from its group.
       for (final side in ['homeTeam', 'awayTeam']) {
         final name = (raw[side] as Map<String, dynamic>?)?['name'] as String?;
         if (name != null) qualified.add(TeamLookup.resolve(name).name);
@@ -112,10 +132,60 @@ class FootballDataRepository implements TournamentRepository {
       if (match.isLive && _live == null) _live = match;
     }
 
+    final epoch = DateTime.utc(2026);
     for (final list in _byRound.values) {
-      list.sort((a, b) => a.dateLong.compareTo(b.dateLong));
+      list.sort((a, b) => (a.kickoff ?? epoch).compareTo(b.kickoff ?? epoch));
     }
+    _orderBracket();
     return qualified;
+  }
+
+  /// Reorders each knockout round into bracket order, so a match's two
+  /// feeder games sit adjacent to it in the previous column and the
+  /// connector lines pair the right cards. Linkage is derived from
+  /// decided results: once a feeder finishes, its winner is named in
+  /// the next round's fixture. Feeders still undecided keep their
+  /// chronological position among the remaining slots and self-correct
+  /// as results come in.
+  void _orderBracket() {
+    const pairs = [
+      (Round.f, Round.sf),
+      (Round.sf, Round.qf),
+      (Round.qf, Round.r16),
+      (Round.r16, Round.r32),
+    ];
+    for (final (next, prev) in pairs) {
+      final nextMatches = _byRound[next]!;
+      final pool = [..._byRound[prev]!];
+      // Only reorder a fully-drawn pair of rounds — with a partial draw
+      // there's no way to know which slots the missing fixtures occupy.
+      if (nextMatches.isEmpty || pool.length != nextMatches.length * 2) {
+        continue;
+      }
+      final slots = <Match?>[];
+      for (final n in nextMatches) {
+        slots.add(_takeFeeder(pool, n.teamA));
+        slots.add(_takeFeeder(pool, n.teamB));
+      }
+      final ordered = [for (final m in slots) m ?? pool.removeAt(0)];
+      _byRound[prev]!
+        ..clear()
+        ..addAll(ordered);
+    }
+  }
+
+  /// Removes and returns the finished match in [pool] whose winner is
+  /// [team], if any.
+  Match? _takeFeeder(List<Match> pool, Team? team) {
+    if (team == null) return null;
+    for (var i = 0; i < pool.length; i++) {
+      final m = pool[i];
+      final side = m.winner;
+      if (side == null) continue;
+      final winner = side == MatchSide.a ? m.teamA : m.teamB;
+      if (winner?.name == team.name) return pool.removeAt(i);
+    }
+    return null;
   }
 
   void _indexStandings() {
@@ -165,14 +235,41 @@ class FootballDataRepository implements TournamentRepository {
     }
 
     final names = _apiNames[match.id];
+    var events = match.events;
+    if (match.isFinished || match.isLive) {
+      try {
+        events = await _espnEvents(match);
+      } on Exception {
+        fetchFailed = true; // retry on the next open
+      }
+    }
+
     final detail = MatchDetail(
-      events: match.events,
+      events: events,
       headToHead: FootballDataMappers.headToHeadFromJson(h2hJson),
       formA: _groupFormFor(teamA, names?.home ?? ''),
       formB: _groupFormFor(teamB, names?.away ?? ''),
     );
-    if (!fetchFailed) _detailCache[match.id] = detail;
+    // A live match's timeline keeps growing — never freeze it in cache.
+    if (!fetchFailed && !match.isLive) _detailCache[match.id] = detail;
     return detail;
+  }
+
+  /// Pulls the goal/card timeline from ESPN by locating the same
+  /// fixture on the kickoff day's scoreboard.
+  Future<List<MatchEvent>> _espnEvents(Match match) async {
+    final names = _apiNames[match.id];
+    final kickoff = match.kickoff;
+    if (names == null || kickoff == null) return match.events;
+
+    var eventId = _espnEventIds[match.id];
+    if (eventId == null) {
+      final board = await _espn.scoreboard(kickoff);
+      eventId = EspnEventsMappers.findEventId(board, home: names.home, away: names.away);
+      if (eventId == null) return match.events;
+      _espnEventIds[match.id] = eventId;
+    }
+    return EspnEventsMappers.eventsFromSummary(await _espn.summary(eventId));
   }
 
   TeamGroupForm _groupFormFor(Team team, String apiName) {
@@ -190,7 +287,10 @@ class FootballDataRepository implements TournamentRepository {
     );
   }
 
-  void dispose() => _client.dispose();
+  void dispose() {
+    _client.dispose();
+    _espn.dispose();
+  }
 }
 
 class _GroupPos {

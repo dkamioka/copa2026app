@@ -2,10 +2,11 @@ import 'match_event.dart';
 import 'penalty_shootout.dart';
 import 'team.dart';
 
-enum Round { r16, qf, sf, f }
+enum Round { r32, r16, qf, sf, f }
 
 extension RoundLabels on Round {
   String get shortLabel => switch (this) {
+        Round.r32 => '16-avos',
         Round.r16 => 'Oitavas',
         Round.qf => 'Quartas',
         Round.sf => 'Semifinais',
@@ -13,6 +14,7 @@ extension RoundLabels on Round {
       };
 
   String get fullLabel => switch (this) {
+        Round.r32 => 'Dezesseis avos de final',
         Round.r16 => 'Oitavas de Final',
         Round.qf => 'Quartas de Final',
         Round.sf => 'Semifinal',
@@ -42,6 +44,11 @@ class Match {
 
   final String venue;
 
+  /// Kickoff instant (UTC) when the data source provides one. The
+  /// formatted [dateShort]/[dateLong] strings are for display; this is
+  /// for sorting and cross-source lookups. Null on mock data.
+  final DateTime? kickoff;
+
   /// Short label for the bracket card footer, e.g. "Amanhã · 21:00".
   final String dateShort;
 
@@ -63,6 +70,7 @@ class Match {
     this.liveMinute,
     this.penalties,
     required this.venue,
+    this.kickoff,
     required this.dateShort,
     required this.dateLong,
     this.events = const [],

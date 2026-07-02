@@ -19,6 +19,11 @@ abstract class TournamentRepository {
   /// snapshot the sync getters serve. No-op for the mock.
   Future<void> refresh();
 
+  /// When the snapshot was last (successfully) refreshed — shown in the
+  /// header so users know how fresh the scores are. Null before the
+  /// first load completes.
+  DateTime? get lastUpdatedAt;
+
   List<Match> matchesByRound(Round round);
 
   Match? matchById(String id);

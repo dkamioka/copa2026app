@@ -20,9 +20,9 @@ abstract final class ApiFootballMappers {
     final l = label.toLowerCase();
     // The 48-team 2026 format adds a Round of 32 before the R16 — its
     // label variants ("Round of 32", "1/16-finals", "16th Finals") must
-    // be ruled out before the generic 'final' check below, or they'd be
+    // be matched before the generic 'final' check below, or they'd be
     // misread as the Final.
-    if (l.contains('32') || l.contains('1/16') || l.contains('16th')) return null;
+    if (l.contains('32') || l.contains('1/16') || l.contains('16th')) return Round.r32;
     if (l.contains('8th') || l.contains('round of 16') || l.contains('1/8')) return Round.r16;
     if (l.contains('quarter')) return Round.qf;
     if (l.contains('semi')) return Round.sf;
@@ -100,6 +100,7 @@ abstract final class ApiFootballMappers {
       liveMinute: elapsed != null ? "$elapsed'" : null,
       penalties: penalties,
       venue: venue.isEmpty ? 'Local a definir' : venue,
+      kickoff: date.toUtc(),
       dateShort: _fmtShort(date),
       dateLong: _fmtLong(date),
     );

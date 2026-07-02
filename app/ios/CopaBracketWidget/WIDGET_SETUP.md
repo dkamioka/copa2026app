@@ -4,12 +4,13 @@ This folder holds the source for the "Mundial 2026" Home Screen
 widget (Small/Medium/Large — shows the live match or the current
 round's fixtures, tapping opens the app to the bracket).
 
-**Why this can't be wired up automatically:** creating a new Xcode
-target and an App Groups entitlement both require Xcode's GUI and your
-Apple Developer Team ID — neither is scriptable from outside Xcode, and
-this app was built in a Linux sandbox with no Xcode available to test
-against. The code below is written and internally consistent, but you
-need to do the following once, on a Mac, before it'll build.
+> **Status: já configurado.** O target `CopaBracketWidget`, o App Group
+> (`group.br.com.kamioka.worldcup2026`) e o embed no Runner foram criados
+> por script (gem `xcodeproj`) direto no `project.pbxproj` — os passos
+> manuais abaixo ficam como referência caso o projeto precise ser
+> recriado do zero. Detalhe não óbvio: o target novo precisa de
+> `PRODUCT_NAME = $(TARGET_NAME)` explícito nas build settings, senão o
+> build falha com "Multiple commands produce '….appex'".
 
 ## 1. Add the widget extension target
 
@@ -36,7 +37,7 @@ widget reads it from there.
 
 1. Select the **Runner** target → **Signing & Capabilities** → **+
    Capability → App Groups**. Add a group with the exact identifier
-   `group.com.veogroup.worldcup2026`.
+   `group.br.com.kamioka.worldcup2026`.
 2. Select the **CopaBracketWidget** target → **Signing & Capabilities**
    → **+ Capability → App Groups**. Add the **same** group ID.
 3. If you use a different bundle ID / team, you can rename the group —

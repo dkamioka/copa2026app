@@ -248,6 +248,12 @@ class _DetailSections extends StatelessWidget {
             if (detail.events.isNotEmpty) ...[
               EventsTimeline(events: detail.events),
               const SizedBox(height: 18),
+            ] else if (match.isFinished || match.isLive) ...[
+              // The timeline comes from a supplemental source (ESPN) —
+              // when it can't be fetched, say so instead of silently
+              // omitting the section; reopening the sheet retries.
+              const _NoTimelineNote(),
+              const SizedBox(height: 18),
             ],
             if (detail.headToHead.isNotEmpty) ...[
               H2hCarousel(items: detail.headToHead),
@@ -274,6 +280,27 @@ class _DetailSections extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Shown in place of the goal timeline when it couldn't be fetched.
+class _NoTimelineNote extends StatelessWidget {
+  const _NoTimelineNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0x0F16162E),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Text(
+        'ℹ️ Não foi possível carregar os lances desta partida agora — '
+        'feche e abra o jogo de novo para tentar outra vez.',
+        style: TextStyle(fontSize: 11.5, color: AppColors.inkFaint, height: 1.4),
+      ),
     );
   }
 }

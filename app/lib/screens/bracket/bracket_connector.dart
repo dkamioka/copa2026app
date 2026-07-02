@@ -5,16 +5,23 @@ import 'bracket_column.dart';
 /// The classic bracket-tree connector: a ")" shape bridging a pair of
 /// matches in one round to their single follow-up match in the next.
 class BracketConnector extends StatelessWidget {
-  const BracketConnector({super.key, required this.sourceMatchCount});
+  const BracketConnector({
+    super.key,
+    required this.sourceMatchCount,
+    this.height = kBracketColumnHeight,
+  });
 
   /// Number of matches feeding into this connector column (e.g. 8 for
   /// the R16→QF bridge). Determines both the per-item height and how
   /// many bracket shapes are drawn.
   final int sourceMatchCount;
 
+  /// Must match the [BracketColumn.height] of the columns it bridges.
+  final double height;
+
   @override
   Widget build(BuildContext context) {
-    final itemHeight = kBracketColumnHeight / sourceMatchCount;
+    final itemHeight = height / sourceMatchCount;
     final count = sourceMatchCount ~/ 2;
     return SizedBox(
       width: kBracketConnectorWidth,
@@ -22,7 +29,7 @@ class BracketConnector extends StatelessWidget {
         children: [
           const SizedBox(height: 28),
           SizedBox(
-            height: kBracketColumnHeight,
+            height: height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

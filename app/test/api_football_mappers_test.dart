@@ -18,10 +18,10 @@ void main() {
       expect(ApiFootballMappers.roundFromLabel('3rd Place Final'), isNull);
     });
 
-    test('does not mistake the 2026 Round of 32 for the Final', () {
-      expect(ApiFootballMappers.roundFromLabel('Round of 32'), isNull);
-      expect(ApiFootballMappers.roundFromLabel('1/16-finals'), isNull);
-      expect(ApiFootballMappers.roundFromLabel('16th Finals'), isNull);
+    test('maps 2026 Round of 32 labels without mistaking them for the Final', () {
+      expect(ApiFootballMappers.roundFromLabel('Round of 32'), Round.r32);
+      expect(ApiFootballMappers.roundFromLabel('1/16-finals'), Round.r32);
+      expect(ApiFootballMappers.roundFromLabel('16th Finals'), Round.r32);
     });
   });
 

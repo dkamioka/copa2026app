@@ -49,10 +49,16 @@ class HomeWidgetBridge {
         'status': m.status.name,
         'minute': m.liveMinute,
         'footer': m.footerLabel,
+        'dateShort': m.dateShort,
+        'utc': m.kickoff?.toIso8601String(),
+        'pens': m.penalties != null
+            ? '${m.penalties!.scoreA}–${m.penalties!.scoreB}'
+            : null,
+        'winner': m.winner?.name,
       };
 
   static Map<String, dynamic> _buildSnapshot(TournamentRepository repository) {
-    const rounds = [Round.r16, Round.qf, Round.sf, Round.f];
+    const rounds = Round.values;
     final live = repository.liveMatch;
     return {
       'updatedAt': DateTime.now().toIso8601String(),

@@ -14,9 +14,12 @@ void main() {
       expect(FootballDataMappers.roundFromStage('FINAL'), Round.f);
     });
 
-    test('keeps group stage, Round of 32 and 3rd place out of the bracket', () {
+    test('maps the 2026 Round of 32 into the bracket', () {
+      expect(FootballDataMappers.roundFromStage('LAST_32'), Round.r32);
+    });
+
+    test('keeps group stage and 3rd place out of the bracket', () {
       expect(FootballDataMappers.roundFromStage('GROUP_STAGE'), isNull);
-      expect(FootballDataMappers.roundFromStage('LAST_32'), isNull);
       expect(FootballDataMappers.roundFromStage('THIRD_PLACE'), isNull);
     });
   });

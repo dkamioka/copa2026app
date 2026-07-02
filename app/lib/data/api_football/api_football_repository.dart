@@ -22,6 +22,7 @@ class ApiFootballRepository implements TournamentRepository {
   final ApiFootballClient _client;
 
   final Map<Round, List<Match>> _byRound = {
+    Round.r32: [],
     Round.r16: [],
     Round.qf: [],
     Round.sf: [],
@@ -61,7 +62,13 @@ class ApiFootballRepository implements TournamentRepository {
     _standings = ApiFootballMappers.standingsFromJson(results[1]);
     _scorers = ApiFootballMappers.scorersFromJson(results[2]);
     _indexStandings();
+    _lastUpdatedAt = DateTime.now();
   }
+
+  DateTime? _lastUpdatedAt;
+
+  @override
+  DateTime? get lastUpdatedAt => _lastUpdatedAt;
 
   void _ingestFixtures(List<dynamic> fixtures) {
     for (final list in _byRound.values) {

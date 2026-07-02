@@ -25,6 +25,7 @@ class MockTournamentRepository implements TournamentRepository {
 
   final Map<String, Match> _byId = {};
   final Map<Round, List<Match>> _byRound = {
+    Round.r32: [],
     Round.r16: [],
     Round.qf: [],
     Round.sf: [],
@@ -423,7 +424,13 @@ class MockTournamentRepository implements TournamentRepository {
   @override
   Future<void> refresh() async {
     // Mock data is already in memory — nothing to load.
+    _lastUpdatedAt = DateTime.now();
   }
+
+  DateTime? _lastUpdatedAt;
+
+  @override
+  DateTime? get lastUpdatedAt => _lastUpdatedAt;
 
   @override
   List<Match> matchesByRound(Round round) => List.unmodifiable(_byRound[round]!);

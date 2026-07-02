@@ -128,3 +128,24 @@ it before releases (~6 requests of quota per run).
 - If you subscribe via RapidAPI instead of api-sports.io directly, change
   `ApiConfig.host` and the auth header in `ApiFootballClient` (noted in
   those files).
+
+## Timeline de lances (fonte suplementar: ESPN, sem chave)
+
+O free tier do football-data.org não fornece o minuto a minuto (gols,
+cartões) — apenas o placar. Para preencher a seção "Lances do jogo", o
+`FootballDataRepository` consulta os endpoints públicos e não oficiais
+da ESPN (`site.api.espn.com/.../soccer/fifa.world`):
+
+1. `scoreboard?dates=YYYYMMDD` no dia (UTC) do jogo → localiza o event
+   id da ESPN casando os nomes das equipes (via `TeamLookup`, os nomes
+   em inglês das duas fontes são praticamente idênticos).
+2. `summary?event={id}` → `keyEvents` mapeados para `MatchEvent`
+   (gol, gol de pênalti, cartões; cobranças de shootout são excluídas —
+   já aparecem no placar de pênaltis).
+
+Melhor esforço: é uma API não documentada e pode mudar sem aviso.
+Qualquer falha degrada para uma nota "não foi possível carregar os
+lances" no sheet de detalhe, sem afetar placar/tabela/artilharia.
+Partidas ao vivo não entram no cache de detalhe, então a timeline
+cresce a cada reabertura. Mappers cobertos por
+`test/espn_events_mappers_test.dart` com amostras reais do feed.

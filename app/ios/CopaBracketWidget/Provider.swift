@@ -7,7 +7,7 @@ struct CopaWidgetEntry: TimelineEntry {
 
 struct CopaWidgetProvider: TimelineProvider {
   // Must match kCopaWidgetAppGroupId in ios/Runner/AppDelegate.swift.
-  static let appGroupId = "group.com.veogroup.worldcup2026"
+  static let appGroupId = "group.br.com.kamioka.worldcup2026"
 
   func placeholder(in context: Context) -> CopaWidgetEntry {
     CopaWidgetEntry(date: Date(), snapshot: .empty)

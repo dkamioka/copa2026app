@@ -81,7 +81,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Header(),
+                    _Header(lastUpdatedAt: widget.repository.lastUpdatedAt),
                     const SizedBox(height: 13),
                     SegmentedTabs(
                       labels: _labels,
@@ -195,8 +195,28 @@ class _NoticeBanner extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
+  const _Header({this.lastUpdatedAt});
+
+  /// When the data snapshot was last refreshed — see
+  /// [TournamentRepository.lastUpdatedAt].
+  final DateTime? lastUpdatedAt;
+
+  String _two(int n) => n.toString().padLeft(2, '0');
+
+  String? get _updatedLabel {
+    final t = lastUpdatedAt?.toLocal();
+    if (t == null) return null;
+    final now = DateTime.now();
+    final sameDay = t.year == now.year && t.month == now.month && t.day == now.day;
+    final hhmm = '${_two(t.hour)}:${_two(t.minute)}';
+    return sameDay
+        ? 'Atualizado às $hhmm'
+        : 'Atualizado ${_two(t.day)}/${_two(t.month)} $hhmm';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final updated = _updatedLabel;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,7 +237,27 @@ class _Header extends StatelessWidget {
         // Brand name is deliberately generic ("Mundial 2026"): FIFA
         // aggressively enforces its marks ("FIFA", "World Cup", "Copa do
         // Mundo 2026") and App Review rejects on 5.2.1 for using them.
-        const Text('Mundial 2026', style: AppTextStyles.title),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Text('Mundial 2026', style: AppTextStyles.title),
+            if (updated != null) ...[
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  updated,
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink.withValues(alpha: 0.4),
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }

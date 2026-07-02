@@ -10,10 +10,11 @@ import '../api_football/team_lookup.dart';
 /// Shapes verified against the live 2026 World Cup feed (see
 /// test/football_data_mappers_test.dart for real-shape samples).
 abstract final class FootballDataMappers {
-  /// Maps a v4 `stage` to a bracket [Round]. LAST_32 and THIRD_PLACE are
+  /// Maps a v4 `stage` to a bracket [Round]. THIRD_PLACE is
   /// deliberately outside the bracket (same product decision as the
   /// API-Football adapter).
   static Round? roundFromStage(String? stage) => switch (stage) {
+        'LAST_32' => Round.r32,
         'LAST_16' => Round.r16,
         'QUARTER_FINALS' => Round.qf,
         'SEMI_FINALS' => Round.sf,
@@ -109,6 +110,7 @@ abstract final class FootballDataMappers {
       penalties: penalties,
       // v4's free tier doesn't populate venue either.
       venue: '',
+      kickoff: date.toUtc(),
       dateShort: _fmtShort(date),
       dateLong: _fmtLong(date),
     );

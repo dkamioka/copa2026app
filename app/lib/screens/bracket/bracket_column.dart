@@ -15,12 +15,18 @@ class BracketColumn extends StatelessWidget {
     required this.matches,
     required this.onOpen,
     this.highlightId,
+    this.height = kBracketColumnHeight,
   });
 
   final String label;
   final List<Match> matches;
   final ValueChanged<Match> onOpen;
   final String? highlightId;
+
+  /// Column body height. All columns of one bracket share the same
+  /// value, scaled up when a round holds more than 8 matches (the 2026
+  /// Round of 32 has 16).
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,7 @@ class BracketColumn extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: kBracketColumnHeight,
+            height: height,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Column(

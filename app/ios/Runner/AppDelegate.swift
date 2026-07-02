@@ -6,7 +6,7 @@ import WidgetKit
 /// Must match the "App Groups" capability entitlement on BOTH this app
 /// target and the widget extension target in Xcode — see
 /// ios/CopaBracketWidget/WIDGET_SETUP.md.
-let kCopaWidgetAppGroupId = "group.com.veogroup.worldcup2026"
+let kCopaWidgetAppGroupId = "group.br.com.kamioka.worldcup2026"
 private let kCopaWidgetChannelName = "copa2026/widget_bridge"
 private let kCopaWidgetSnapshotKey = "bracket_snapshot"
 

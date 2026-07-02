@@ -22,12 +22,34 @@ class BracketView extends StatefulWidget {
 class _BracketViewState extends State<BracketView> {
   final _hController = ScrollController();
 
-  static const _rounds = [Round.r16, Round.qf, Round.sf, Round.f];
+  /// Rounds that actually have fixtures in the current data source —
+  /// the 2026 Round of 32 shows up on the live feed, while the mock
+  /// (and any pre-draw state) simply omits its column.
+  List<Round> get _visibleRounds => [
+        for (final r in Round.values)
+          if (widget.repository.matchesByRound(r).isNotEmpty) r,
+      ];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollTo(Round.qf, animate: false));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final round = _initialRound();
+      if (round != null) _scrollTo(round, animate: false);
+    });
+  }
+
+  /// The round worth landing on: the live match's round, else the
+  /// earliest round with a match still to play, else the latest drawn.
+  Round? _initialRound() {
+    final rounds = _visibleRounds;
+    if (rounds.isEmpty) return null;
+    final live = widget.repository.liveMatch;
+    if (live != null && rounds.contains(live.round)) return live.round;
+    for (final r in rounds) {
+      if (widget.repository.matchesByRound(r).any((m) => !m.isFinished)) return r;
+    }
+    return rounds.last;
   }
 
   @override
@@ -37,19 +59,9 @@ class _BracketViewState extends State<BracketView> {
   }
 
   double _offsetFor(Round round) {
-    // R16 | conn | QF | conn | SF | conn | F
-    const col = kBracketColumnWidth;
-    const conn = kBracketConnectorWidth;
-    switch (round) {
-      case Round.r16:
-        return 0;
-      case Round.qf:
-        return col + conn;
-      case Round.sf:
-        return (col + conn) * 2;
-      case Round.f:
-        return (col + conn) * 3;
-    }
+    final index = _visibleRounds.indexOf(round);
+    if (index <= 0) return 0;
+    return (kBracketColumnWidth + kBracketConnectorWidth) * index;
   }
 
   void _scrollTo(Round round, {bool animate = true}) {
@@ -70,9 +82,9 @@ class _BracketViewState extends State<BracketView> {
   Widget build(BuildContext context) {
     final repo = widget.repository;
     final live = repo.liveMatch;
-    final hasMatches = _rounds.any((r) => repo.matchesByRound(r).isNotEmpty);
+    final rounds = _visibleRounds;
 
-    if (!hasMatches) {
+    if (rounds.isEmpty) {
       // Honest pre-knockout state: before the bracket is drawn the live
       // feed legitimately has no knockout fixtures — say so instead of
       // rendering four empty columns.
@@ -110,7 +122,7 @@ class _BracketViewState extends State<BracketView> {
             const Text('Chave', style: AppTextStyles.sectionHeader),
             Row(
               children: [
-                for (final r in _rounds) _RoundJumpChip(round: r, onTap: () => _scrollTo(r)),
+                for (final r in rounds) _RoundJumpChip(round: r, onTap: () => _scrollTo(r)),
               ],
             ),
           ],
@@ -120,34 +132,35 @@ class _BracketViewState extends State<BracketView> {
           controller: _hController,
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BracketColumn(
-                label: Round.r16.shortLabel,
-                matches: repo.matchesByRound(Round.r16),
-                onOpen: _openMatch,
-              ),
-              const BracketConnector(sourceMatchCount: 8),
-              BracketColumn(
-                label: Round.qf.shortLabel,
-                matches: repo.matchesByRound(Round.qf),
-                onOpen: _openMatch,
-              ),
-              const BracketConnector(sourceMatchCount: 4),
-              BracketColumn(
-                label: Round.sf.shortLabel,
-                matches: repo.matchesByRound(Round.sf),
-                onOpen: _openMatch,
-              ),
-              const BracketConnector(sourceMatchCount: 2),
-              BracketColumn(
-                label: Round.f.shortLabel,
-                matches: repo.matchesByRound(Round.f),
-                onOpen: _openMatch,
-              ),
-            ],
-          ),
+          child: Builder(builder: (context) {
+            // Every column shares one height, scaled so the densest
+            // round keeps the same per-match density the original
+            // 8-match layout had (the 2026 R32 holds 16 matches).
+            final maxMatches = rounds
+                .map((r) => repo.matchesByRound(r).length)
+                .reduce((a, b) => a > b ? a : b);
+            final height = maxMatches <= 8
+                ? kBracketColumnHeight
+                : kBracketColumnHeight * maxMatches / 8;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < rounds.length; i++) ...[
+                  if (i > 0)
+                    BracketConnector(
+                      sourceMatchCount: repo.matchesByRound(rounds[i - 1]).length,
+                      height: height,
+                    ),
+                  BracketColumn(
+                    label: rounds[i].shortLabel,
+                    matches: repo.matchesByRound(rounds[i]),
+                    onOpen: _openMatch,
+                    height: height,
+                  ),
+                ],
+              ],
+            );
+          }),
         ),
         const SizedBox(height: 10),
         const Center(
