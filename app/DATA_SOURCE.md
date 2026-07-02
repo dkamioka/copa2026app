@@ -1,42 +1,69 @@
-# Data source — mock vs. live (API-Football)
+# Data source — mock vs. live
 
 The app reads all data through one interface, `TournamentRepository`
-(`lib/data/tournament_repository.dart`), with two implementations:
+(`lib/data/tournament_repository.dart`), with three implementations, in
+bootstrap priority order:
 
-- **`MockTournamentRepository`** — the offline illustrative dataset
-  (same content as the original design). Used automatically when no API
-  key/proxy is provided, so a fresh clone runs with zero setup.
-- **`ApiFootballRepository`** (`lib/data/api_football/`) — live data from
-  [API-Football](https://www.api-football.com/) v3.
+1. **`FootballDataRepository`** (`lib/data/football_data/`) — live data
+   from [football-data.org](https://www.football-data.org/) v4. **The
+   production source**: its FREE tier covers the current World Cup
+   (verified against the live 2026 feed — all 104 fixtures, standings,
+   scorers) at 10 req/min, which the caching proxy makes sufficient for
+   any number of app users. Free-tier gaps, degraded gracefully in the
+   UI: no goal/card timeline, no live minute, no venue, no injuries.
+2. **`ApiFootballRepository`** (`lib/data/api_football/`) — live data
+   from [API-Football](https://www.api-football.com/) v3. Optional
+   premium source with richer per-match detail (events timeline, live
+   minute, injuries); requires a paid plan for season 2026.
+3. **`MockTournamentRepository`** — the offline illustrative dataset.
+   Used automatically when no live source is configured, so a fresh
+   clone runs with zero setup.
 
 ## Running with live data
 
 **Production (proxy — the only mode that should ship):** deploy the
 caching proxy in [`../proxy/`](../proxy/worker.js) — a Cloudflare Worker
-that holds the API key as a server-side secret and collapses all users
+that holds credentials as server-side secrets and collapses all users
 into a few edge-cached upstream calls — then point the build at it. No
-key ships in the binary:
+credential ships in the binary:
 
 ```bash
-flutter build ipa --dart-define=APIFOOTBALL_PROXY=copa2026.YOUR-SUBDOMAIN.workers.dev
+flutter build ipa --dart-define=FOOTBALLDATA_PROXY=copa2026.YOUR-SUBDOMAIN.workers.dev
 ```
 
-**Development (direct key):** pass your API-Football key via
-`--dart-define`. The key is **never** stored in source — and must never
-ship in a release build (embedded in a public binary it's shared by
-every install and can't be revoked without an app update):
+**Development (direct token):** pass your football-data.org token via
+`--dart-define`. Tokens are **never** stored in source — and must never
+ship in a release build (embedded in a public binary a credential is
+shared by every install and can't be revoked without an app update):
 
 ```bash
-# Run on a connected device
-flutter run --dart-define=APIFOOTBALL_KEY=YOUR_KEY_HERE
+flutter run --dart-define=FOOTBALLDATA_TOKEN=YOUR_TOKEN
+# or, for the API-Football source:
+flutter run --dart-define=APIFOOTBALL_KEY=YOUR_KEY
 ```
 
 In Xcode (if you run from there instead of the CLI), add the same
 `--dart-define` under the Runner scheme's *Run → Arguments → Arguments
 Passed On Launch*, or build via the CLI command above.
 
-With neither define, `ApiConfig.useMock` is `true` and the app uses the
-mock.
+With no define at all the app uses the mock.
+
+## Integration tests against real data
+
+```bash
+# football-data.org, live 2026 tournament (structural assertions):
+flutter test test/football_data_integration_test.dart \
+  --dart-define=FOOTBALLDATA_TOKEN=your_token
+
+# API-Football, completed 2022 World Cup (free keys can't read 2026):
+flutter test test/live_api_integration_test.dart \
+  --dart-define=APIFOOTBALL_KEY=your_key \
+  --dart-define=APIFOOTBALL_SEASON=2022
+```
+
+Run these before releases — the API-Football suite is what caught the
+`page` parameter bug, and the football-data suite validates the actual
+production feed (~4 requests per run).
 
 ## How it maps to the app
 

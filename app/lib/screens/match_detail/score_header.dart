@@ -35,7 +35,9 @@ class ScoreHeader extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         Text(
-          '${match.venue}   ·   ${match.dateLong}',
+          // Venue is unavailable on some data sources — show only what
+          // exists instead of a dangling separator.
+          [match.venue, match.dateLong].where((s) => s.isNotEmpty).join('   ·   '),
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 11, color: AppColors.inkFainter),
         ),

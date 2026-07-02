@@ -93,14 +93,17 @@ class Match {
   String get scoreLabelB =>
       (isFinished || isLive) && scoreB != null ? '$scoreB' : '';
 
-  /// Footer label shown on the compact bracket card.
+  /// Footer label shown on the compact bracket card. The live minute is
+  /// omitted when the data source doesn't provide one.
   String get footerLabel {
     if (isFinished) {
       return penalties != null
           ? 'Pên · ${penalties!.scoreA}-${penalties!.scoreB}'
           : 'Encerrado';
     }
-    if (isLive) return '● Ao vivo · ${liveMinute ?? ''}';
+    if (isLive) {
+      return liveMinute != null ? '● Ao vivo · $liveMinute' : '● Ao vivo';
+    }
     return dateShort;
   }
 
@@ -112,7 +115,7 @@ class Match {
 
   String get statusLabel {
     if (isFinished) return penalties != null ? 'Encerrado · pên.' : 'Encerrado';
-    if (isLive) return 'Ao vivo · ${liveMinute ?? ''}';
+    if (isLive) return liveMinute != null ? 'Ao vivo · $liveMinute' : 'Ao vivo';
     return dateLong;
   }
 }
