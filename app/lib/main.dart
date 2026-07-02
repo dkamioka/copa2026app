@@ -42,46 +42,56 @@ class AppBootstrap extends StatefulWidget {
 }
 
 class _AppBootstrapState extends State<AppBootstrap> {
-  late final Future<_Bootstrapped> _future = _bootstrap();
+  late Future<_Bootstrapped> _future = _bootstrap();
 
   Future<_Bootstrapped> _bootstrap() async {
-    if (ApiConfig.useMock) {
-      final repo = MockTournamentRepository();
-      await repo.refresh();
-      HomeWidgetBridge.pushSnapshot(repo);
-      return _Bootstrapped(repo, null);
+    if (!ApiConfig.useMock) {
+      final api = ApiFootballRepository();
+      try {
+        await api.refresh();
+        HomeWidgetBridge.pushSnapshot(api);
+        return _Bootstrapped(api, null);
+      } catch (_) {
+        // Live feed unavailable (no network, quota, bad key…) — degrade to
+        // the illustrative dataset rather than showing an empty app.
+        api.dispose();
+        return _mockBootstrap(
+          'Sem conexão com os dados ao vivo — exibindo dados de exemplo.',
+        );
+      }
     }
+    return _mockBootstrap(null);
+  }
 
-    final api = ApiFootballRepository();
-    try {
-      await api.refresh();
-      HomeWidgetBridge.pushSnapshot(api);
-      return _Bootstrapped(api, null);
-    } catch (_) {
-      // Live feed unavailable (no network, quota, bad key…) — degrade to
-      // the illustrative dataset rather than showing an empty app.
-      final repo = MockTournamentRepository();
-      await repo.refresh();
-      HomeWidgetBridge.pushSnapshot(repo);
-      return _Bootstrapped(
-        repo,
-        'Sem conexão com os dados ao vivo — exibindo dados de exemplo.',
-      );
-    }
+  Future<_Bootstrapped> _mockBootstrap(String? notice) async {
+    final repo = MockTournamentRepository();
+    await repo.refresh();
+    HomeWidgetBridge.pushSnapshot(repo);
+    return _Bootstrapped(repo, notice);
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Copa do Mundo 2026',
+      title: 'Mundial 2026',
       debugShowCheckedModeBanner: false,
       theme: kAppTheme,
       home: FutureBuilder<_Bootstrapped>(
         future: _future,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const _LoadingScreen();
-          final data = snapshot.data!;
-          return HomeShell(repository: data.repository, notice: data.notice);
+          final data = snapshot.data;
+          if (data != null) {
+            return HomeShell(repository: data.repository, notice: data.notice);
+          }
+          // A bootstrap error is unexpected (the API path already falls
+          // back to the mock), but an infinite spinner would be worse —
+          // surface it and offer a retry.
+          if (snapshot.hasError) {
+            return _BootstrapErrorScreen(
+              onRetry: () => setState(() => _future = _bootstrap()),
+            );
+          }
+          return const _LoadingScreen();
         },
       ),
     );
@@ -98,10 +108,47 @@ class WorldCup2026App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Copa do Mundo 2026',
+      title: 'Mundial 2026',
       debugShowCheckedModeBanner: false,
       theme: kAppTheme,
       home: HomeShell(repository: repository),
+    );
+  }
+}
+
+class _BootstrapErrorScreen extends StatelessWidget {
+  const _BootstrapErrorScreen({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      backgroundColor: const Color(0x00000000),
+      child: AuroraBackground(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('⚽', style: TextStyle(fontSize: 44)),
+              const SizedBox(height: 16),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  'Não foi possível carregar os dados.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Color(0xFF16162E)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              CupertinoButton(
+                onPressed: onRetry,
+                child: const Text('Tentar novamente'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -121,7 +168,7 @@ class _LoadingScreen extends StatelessWidget {
               Text('🏆', style: TextStyle(fontSize: 44)),
               SizedBox(height: 16),
               Text(
-                'Copa do Mundo 2026',
+                'Mundial 2026',
                 style: TextStyle(
                   fontFamily: '.SF Pro Display',
                   fontSize: 20,

@@ -154,11 +154,13 @@ class ApiFootballRepository implements TournamentRepository {
     ];
 
     List<List<dynamic>> results;
+    var fetchFailed = false;
     try {
       results = await Future.wait(futures);
     } on ApiFootballException {
       // Detail is best-effort — if a per-match call fails (quota, etc.)
       // still show whatever we can (group form is already cached).
+      fetchFailed = true;
       results = [const [], const [], const []];
     }
 
@@ -175,7 +177,10 @@ class ApiFootballRepository implements TournamentRepository {
       newsA: newsA,
       newsB: newsB,
     );
-    _detailCache[match.id] = detail;
+    // Only cache successful loads — caching a failed (empty) fetch would
+    // freeze a transient network/quota hiccup into "no detail, ever" for
+    // this match. On failure the next open simply retries.
+    if (!fetchFailed) _detailCache[match.id] = detail;
     return detail;
   }
 

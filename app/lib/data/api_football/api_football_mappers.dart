@@ -18,6 +18,11 @@ abstract final class ApiFootballMappers {
   /// match, which the knockout bracket doesn't show.
   static Round? roundFromLabel(String label) {
     final l = label.toLowerCase();
+    // The 48-team 2026 format adds a Round of 32 before the R16 — its
+    // label variants ("Round of 32", "1/16-finals", "16th Finals") must
+    // be ruled out before the generic 'final' check below, or they'd be
+    // misread as the Final.
+    if (l.contains('32') || l.contains('1/16') || l.contains('16th')) return null;
     if (l.contains('8th') || l.contains('round of 16') || l.contains('1/8')) return Round.r16;
     if (l.contains('quarter')) return Round.qf;
     if (l.contains('semi')) return Round.sf;
@@ -132,8 +137,14 @@ abstract final class ApiFootballMappers {
         side: isHome ? MatchSide.a : MatchSide.b,
       ));
     }
-    out.sort((a, b) => a.minute.compareTo(b.minute));
-    return out;
+    // List.sort is unstable; tie-break on arrival order so same-minute
+    // events keep the sequence the feed reported them in.
+    final indexed = out.asMap().entries.toList()
+      ..sort((a, b) {
+        final byMinute = a.value.minute.compareTo(b.value.minute);
+        return byMinute != 0 ? byMinute : a.key.compareTo(b.key);
+      });
+    return [for (final e in indexed) e.value];
   }
 
   static List<GroupStanding> standingsFromJson(List<dynamic> response) {
@@ -155,6 +166,15 @@ abstract final class ApiFootballMappers {
         final teamMap = row['team'] as Map<String, dynamic>? ?? const {};
         final all = row['all'] as Map<String, dynamic>? ?? const {};
         letter = _ptGroup(row['group'] as String? ?? letter);
+        // The API marks advancing teams via `description` (verified on
+        // real data: "Promotion - …" on qualified rows, null otherwise).
+        // Prefer it over assuming top-2: the 2026 format also advances
+        // the 8 best third-placed teams. Fall back to top-2 when the
+        // feed hasn't populated descriptions.
+        final description = row['description'] as String?;
+        final qualified = description != null
+            ? description.toLowerCase().contains('promotion')
+            : i < 2;
         rows.add(GroupStandingRow(
           team: TeamLookup.resolve(teamMap['name'] as String? ?? '?'),
           points: _asInt(row['points']) ?? 0,
@@ -163,7 +183,7 @@ abstract final class ApiFootballMappers {
           draws: _asInt(all['draw']) ?? 0,
           losses: _asInt(all['lose']) ?? 0,
           goalDiff: _asInt(row['goalsDiff']) ?? 0,
-          qualified: i < 2,
+          qualified: qualified,
         ));
       }
       if (rows.isNotEmpty) out.add(GroupStanding(letter: letter, rows: rows));
@@ -173,8 +193,7 @@ abstract final class ApiFootballMappers {
 
   static List<Scorer> scorersFromJson(List<dynamic> response) {
     final out = <Scorer>[];
-    for (var i = 0; i < response.length; i++) {
-      final raw = response[i];
+    for (final raw in response) {
       if (raw is! Map<String, dynamic>) continue;
       final player = raw['player'] as Map<String, dynamic>? ?? const {};
       final stats = raw['statistics'];
@@ -184,7 +203,7 @@ abstract final class ApiFootballMappers {
         if (g is Map) goals = _asInt(g['total']) ?? 0;
       }
       out.add(Scorer(
-        rank: i + 1,
+        rank: out.length + 1,
         player: player['name'] as String? ?? '?',
         team: TeamLookup.resolve(player['nationality'] as String? ?? '?'),
         goals: goals,

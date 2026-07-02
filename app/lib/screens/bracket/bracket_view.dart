@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../data/tournament_repository.dart';
 import '../../models/match.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/empty_state_card.dart';
 import '../match_detail/match_detail_sheet.dart';
 import 'bracket_column.dart';
 import 'bracket_connector.dart';
@@ -69,8 +70,33 @@ class _BracketViewState extends State<BracketView> {
   Widget build(BuildContext context) {
     final repo = widget.repository;
     final live = repo.liveMatch;
+    final hasMatches = _rounds.any((r) => repo.matchesByRound(r).isNotEmpty);
+
+    if (!hasMatches) {
+      // Honest pre-knockout state: before the bracket is drawn the live
+      // feed legitimately has no knockout fixtures — say so instead of
+      // rendering four empty columns.
+      return ListView(
+        key: const PageStorageKey('bracket_list'),
+        padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
+        children: const [
+          Text('Chave', style: AppTextStyles.sectionHeader),
+          SizedBox(height: 10),
+          EmptyStateCard(
+            emoji: '🗓️',
+            title: 'Chave em definição',
+            message: 'Os confrontos do mata-mata aparecem aqui assim que os '
+                'classificados forem definidos. Acompanhe a fase de grupos '
+                'na aba Classificação.',
+          ),
+        ],
+      );
+    }
 
     return ListView(
+      // Keeps the scroll offset across tab switches (the AnimatedSwitcher
+      // in HomeShell rebuilds each tab from scratch).
+      key: const PageStorageKey('bracket_list'),
       padding: const EdgeInsets.fromLTRB(18, 2, 18, 40),
       children: [
         if (live != null) ...[
@@ -144,16 +170,18 @@ class _RoundJumpChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 6),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onTap();
-        },
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      // The visual chip stays compact, but the tappable area around it
+      // is padded up to ~44pt (Apple HIG minimum touch target).
+      child: Padding(
+        padding: const EdgeInsets.only(left: 6, top: 9, bottom: 9),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5.5),
           decoration: BoxDecoration(
             color: const Color(0x0F16162E),
             borderRadius: BorderRadius.circular(999),
@@ -161,7 +189,7 @@ class _RoundJumpChip extends StatelessWidget {
           child: Text(
             round.shortLabel,
             style: const TextStyle(
-              fontSize: 9.5,
+              fontSize: 10.5,
               fontWeight: FontWeight.w700,
               color: AppColors.inkFainter,
             ),

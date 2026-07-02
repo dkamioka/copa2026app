@@ -24,8 +24,11 @@ class LiveMatchBanner extends StatefulWidget {
 }
 
 class _LiveMatchBannerState extends State<LiveMatchBanner> {
-  late int _minute = int.tryParse(widget.match.liveMinute?.replaceAll("'", '') ?? '') ?? 0;
+  late int _minute = _parseMinute();
   Timer? _timer;
+
+  int _parseMinute() =>
+      int.tryParse(widget.match.liveMinute?.replaceAll("'", '') ?? '') ?? 0;
 
   @override
   void initState() {
@@ -34,6 +37,16 @@ class _LiveMatchBannerState extends State<LiveMatchBanner> {
       if (_minute >= 90) return;
       setState(() => _minute++);
     });
+  }
+
+  @override
+  void didUpdateWidget(LiveMatchBanner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A repository refresh delivers a fresh Match — re-anchor the local
+    // ticking minute to the feed's value instead of drifting from it.
+    if (oldWidget.match.liveMinute != widget.match.liveMinute) {
+      _minute = _parseMinute();
+    }
   }
 
   @override
@@ -80,7 +93,7 @@ class _LiveMatchBannerState extends State<LiveMatchBanner> {
                   Text(match.teamA?.code ?? '', style: _label),
                   const SizedBox(width: 7),
                   Text(
-                    '${match.scoreA} – ${match.scoreB}',
+                    '${match.scoreA ?? 0} – ${match.scoreB ?? 0}',
                     style: _label.copyWith(
                       fontFeatures: const [FontFeature.tabularFigures()],
                       letterSpacing: 0.5,

@@ -1,6 +1,6 @@
 # Home Screen widget — Xcode setup
 
-This folder holds the source for the "Copa do Mundo 2026" Home Screen
+This folder holds the source for the "Mundial 2026" Home Screen
 widget (Small/Medium/Large — shows the live match or the current
 round's fixtures, tapping opens the app to the bracket).
 
@@ -50,7 +50,7 @@ widget reads it from there.
 
 1. Build the `Runner` scheme once (this registers the widget extension
    with the system) and run it on a device or simulator running iOS 17+.
-2. Long-press the Home Screen → **+** → search "Copa do Mundo 2026" →
+2. Long-press the Home Screen → **+** → search "Mundial 2026" →
    add the widget in any size.
 3. Open the app once so it pushes a snapshot (`HomeWidgetBridge.pushSnapshot`
    runs on every launch in `lib/main.dart`) — the widget should populate

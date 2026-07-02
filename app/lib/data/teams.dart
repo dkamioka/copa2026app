@@ -39,6 +39,21 @@ const Map<String, Team> kTeams = {
   'NGA': Team(code: 'NGA', name: 'Nigéria', flag: '🇳🇬', colorA: Color(0xFF008751), colorB: Color(0xFFE9EEF5)),
   'KSA': Team(code: 'KSA', name: 'Arábia Saudita', flag: '🇸🇦', colorA: Color(0xFF006C35), colorB: Color(0xFFE9EEF5)),
   'CMR': Team(code: 'CMR', name: 'Camarões', flag: '🇨🇲', colorA: Color(0xFF007A5E), colorB: Color(0xFFCE1126)),
+  'CAN': Team(code: 'CAN', name: 'Canadá', flag: '🇨🇦', colorA: Color(0xFFDA291C), colorB: Color(0xFFE9EEF5)),
+  'BEL': Team(code: 'BEL', name: 'Bélgica', flag: '🇧🇪', colorA: Color(0xFF1A1A1A), colorB: Color(0xFFFDDA25)),
+  'ITA': Team(code: 'ITA', name: 'Itália', flag: '🇮🇹', colorA: Color(0xFF0066B2), colorB: Color(0xFFE9EEF5)),
+  'AUT': Team(code: 'AUT', name: 'Áustria', flag: '🇦🇹', colorA: Color(0xFFED2939), colorB: Color(0xFFE9EEF5)),
+  'SCO': Team(code: 'SCO', name: 'Escócia', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', colorA: Color(0xFF003078), colorB: Color(0xFFE9EEF5)),
+  'EGY': Team(code: 'EGY', name: 'Egito', flag: '🇪🇬', colorA: Color(0xFFCE1126), colorB: Color(0xFFE9EEF5)),
+  'ALG': Team(code: 'ALG', name: 'Argélia', flag: '🇩🇿', colorA: Color(0xFF006233), colorB: Color(0xFFE9EEF5)),
+  'CIV': Team(code: 'CIV', name: 'Costa do Marfim', flag: '🇨🇮', colorA: Color(0xFFFF8200), colorB: Color(0xFF009A44)),
+  'PAN': Team(code: 'PAN', name: 'Panamá', flag: '🇵🇦', colorA: Color(0xFFDA121A), colorB: Color(0xFF072357)),
+  'PAR': Team(code: 'PAR', name: 'Paraguai', flag: '🇵🇾', colorA: Color(0xFFD52B1E), colorB: Color(0xFF0038A8)),
+  'UZB': Team(code: 'UZB', name: 'Uzbequistão', flag: '🇺🇿', colorA: Color(0xFF0099B5), colorB: Color(0xFFE9EEF5)),
+  'JOR': Team(code: 'JOR', name: 'Jordânia', flag: '🇯🇴', colorA: Color(0xFFCE1126), colorB: Color(0xFFE9EEF5)),
+  'NZL': Team(code: 'NZL', name: 'Nova Zelândia', flag: '🇳🇿', colorA: Color(0xFF1A1A1A), colorB: Color(0xFFE9EEF5)),
+  'RSA': Team(code: 'RSA', name: 'África do Sul', flag: '🇿🇦', colorA: Color(0xFFFFB612), colorB: Color(0xFF007A4D)),
+  'CPV': Team(code: 'CPV', name: 'Cabo Verde', flag: '🇨🇻', colorA: Color(0xFF003893), colorB: Color(0xFFCF2027)),
 };
 
 Team team(String code) => kTeams[code]!;

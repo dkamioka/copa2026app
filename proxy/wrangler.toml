@@ -1,0 +1,6 @@
+name = "copa2026"
+main = "worker.js"
+compatibility_date = "2026-06-01"
+
+# The API-Football key lives ONLY here (never in the app binary):
+#   npx wrangler secret put APIFOOTBALL_KEY

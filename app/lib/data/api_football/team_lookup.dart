@@ -50,6 +50,26 @@ abstract final class TeamLookup {
     'nigeria': 'NGA',
     'saudiarabia': 'KSA',
     'cameroon': 'CMR',
+    'canada': 'CAN',
+    'belgium': 'BEL',
+    'italy': 'ITA',
+    'austria': 'AUT',
+    'scotland': 'SCO',
+    'egypt': 'EGY',
+    'algeria': 'ALG',
+    // API/e feed spellings vary: "Ivory Coast" and "Côte d'Ivoire"
+    // (the latter normalizes with the accented ô stripped).
+    'ivorycoast': 'CIV',
+    'cotedivoire': 'CIV',
+    'ctedivoire': 'CIV',
+    'panama': 'PAN',
+    'paraguay': 'PAR',
+    'uzbekistan': 'UZB',
+    'jordan': 'JOR',
+    'newzealand': 'NZL',
+    'southafrica': 'RSA',
+    'capeverde': 'CPV',
+    'capeverdeislands': 'CPV',
   };
 
   static String _normalize(String name) =>

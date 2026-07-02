@@ -32,6 +32,11 @@ class SegmentedTabs extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutCubic,
+                  // ≥44pt total (4px bar padding + 40px tab) — Apple HIG
+                  // minimum touch target; the old 9px padding produced a
+                  // ~34px-tall tap area that was easy to miss.
+                  constraints: const BoxConstraints(minHeight: 40),
+                  alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 9),
                   decoration: BoxDecoration(
                     color: i == selectedIndex

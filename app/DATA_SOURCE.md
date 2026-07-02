@@ -5,28 +5,38 @@ The app reads all data through one interface, `TournamentRepository`
 
 - **`MockTournamentRepository`** — the offline illustrative dataset
   (same content as the original design). Used automatically when no API
-  key is provided, so a fresh clone runs with zero setup.
+  key/proxy is provided, so a fresh clone runs with zero setup.
 - **`ApiFootballRepository`** (`lib/data/api_football/`) — live data from
   [API-Football](https://www.api-football.com/) v3.
 
 ## Running with live data
 
-Pass your API-Football key at run/build time via `--dart-define`. The key
-is **never** stored in source:
+**Production (proxy — the only mode that should ship):** deploy the
+caching proxy in [`../proxy/`](../proxy/worker.js) — a Cloudflare Worker
+that holds the API key as a server-side secret and collapses all users
+into a few edge-cached upstream calls — then point the build at it. No
+key ships in the binary:
+
+```bash
+flutter build ipa --dart-define=APIFOOTBALL_PROXY=copa2026.YOUR-SUBDOMAIN.workers.dev
+```
+
+**Development (direct key):** pass your API-Football key via
+`--dart-define`. The key is **never** stored in source — and must never
+ship in a release build (embedded in a public binary it's shared by
+every install and can't be revoked without an app update):
 
 ```bash
 # Run on a connected device
 flutter run --dart-define=APIFOOTBALL_KEY=YOUR_KEY_HERE
-
-# Build a release IPA
-flutter build ipa --dart-define=APIFOOTBALL_KEY=YOUR_KEY_HERE
 ```
 
 In Xcode (if you run from there instead of the CLI), add the same
 `--dart-define` under the Runner scheme's *Run → Arguments → Arguments
 Passed On Launch*, or build via the CLI command above.
 
-With no key, `ApiConfig.useMock` is `true` and the app uses the mock.
+With neither define, `ApiConfig.useMock` is `true` and the app uses the
+mock.
 
 ## How it maps to the app
 
@@ -50,7 +60,30 @@ With no key, `ApiConfig.useMock` is `true` and the app uses the mock.
 This keeps request usage low enough to develop on the free tier
 (100 req/day). During the tournament you'd want the $50/mo Starter plan.
 
+## QA against real data (free-tier key)
+
+Free API-Football plans **cannot read season 2026** (they're limited to
+2022–2024 — a paid plan is mandatory for production). The full live
+pipeline is still verifiable end-to-end against the completed 2022 World
+Cup, whose data is stable and fully known:
+
+```bash
+flutter test test/live_api_integration_test.dart \
+  --dart-define=APIFOOTBALL_KEY=your_key \
+  --dart-define=APIFOOTBALL_SEASON=2022
+```
+
+The same `APIFOOTBALL_SEASON` define also works with `flutter run`, so
+the whole app can be driven by real (historical) data on a free key.
+This suite is what caught the `page` parameter bug below — keep running
+it before releases (~6 requests of quota per run).
+
 ## Known limitations / notes
+
+- **`page` query param**: several endpoints (`/fixtures` among them)
+  reject an explicit `page` field with an error envelope. The client
+  therefore never sends `page` on the first request and only paginates
+  when `paging.total > 1` (verified against the live service).
 
 - **Suspensions** aren't a first-class field in any football API — they're
   derived from the `/injuries` feed's `reason` (e.g. "Red Card",

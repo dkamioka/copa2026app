@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../data/tournament_repository.dart';
@@ -28,6 +29,11 @@ class HomeWidgetBridge {
     } on MissingPluginException {
       // No native widget extension wired up yet — safe to ignore until
       // the Xcode-side target from WIDGET_SETUP.md exists.
+    } on PlatformException catch (e) {
+      // Native side reported a problem (e.g. the App Group entitlement
+      // missing — see AppDelegate.swift). The widget staying stale must
+      // never take the app itself down, so log-and-continue.
+      debugPrint('HomeWidgetBridge: snapshot push failed: ${e.code} ${e.message}');
     }
   }
 
